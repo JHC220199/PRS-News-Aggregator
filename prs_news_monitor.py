@@ -38,6 +38,7 @@ from rapidfuzz import fuzz
 DB_PATH            = os.environ.get("PRS_DB_PATH", "prs_news.db")
 AUTHORITIES_PATH   = os.environ.get("PRS_AUTHORITIES", "local_authorities.json")
 RETENTION_DAYS     = int(os.environ.get("PRS_RETENTION_DAYS", "30"))
+WINDOW_CUTOFF      = (date.today() - timedelta(days=RETENTION_DAYS)).isoformat()
 USER_AGENT         = "Mozilla/5.0 (compatible; NRLA-PRS-Monitor/1.0; +https://www.nrla.org.uk)"
  
 # Politeness / robustness when hitting Google News
@@ -69,6 +70,14 @@ THEME_QUERIES = [
 GEO_QUERY_TERMS = ('"selective licensing" OR "additional licensing" OR '
                    '"HMO licensing" OR "landlord licensing" OR "Article 4" OR '
                    '"private rented" OR HMO')
+ 
+# Wales runs on a different regime (Rent Smart Wales, occupation contracts,
+# Renting Homes (Wales) Act, Section 173), so Welsh authorities get their own
+# term-set or the England vocabulary returns almost nothing for them.
+GEO_QUERY_TERMS_WALES = ('"Rent Smart Wales" OR "occupation contract" OR '
+                         '"Renting Homes" OR "Section 173" OR "HMO licensing" OR '
+                         '"landlord licensing" OR "Article 4" OR "private rented" '
+                         'OR HMO OR landlord')
  
 # Curated feeds (name, url). All verified to return content.
 # Add LandlordZONE / regional publisher feeds here once you confirm their URLs.
@@ -111,24 +120,33 @@ PRS_HIGH_SIGNAL_TERMS = [
  
 # Theme categories, in priority order (first match becomes the primary tag).
 CATEGORY_RULES = [
-    ("Selective licensing",        ["selective licensing"]),
-    ("HMO / additional licensing", ["additional licensing", "hmo licensing",
+    ("Selective licensing",        ["selective licensing", "selective licence",
+                                     "selective licence scheme"]),
+    ("HMO / additional licensing", ["additional licensing", "additional licence",
+                                     "hmo licensing", "hmo licence",
                                      "house in multiple occupation",
                                      "houses in multiple occupation", "hmo"]),
     ("Article 4 / planning",       ["article 4", "use class", "c3 to c4",
                                      "c4 use", "permitted development"]),
-    ("Rent Smart Wales",           ["rent smart wales"]),
-    ("Enforcement & penalties",    ["rent repayment", "banning order",
-                                     "civil penalty", "prosecut", "unlicensed",
-                                     "rogue landlord"]),
+    ("Rent Smart Wales",           ["rent smart wales", "renting homes wales",
+                                     "occupation contract"]),
     ("Renters' Rights & reform",   ["renters' rights", "renters rights",
                                      "renters reform", "section 21", "section 8",
                                      "section 173", "no-fault", "no fault"]),
+    ("Enforcement & penalties",    ["rent repayment", "banning order",
+                                     "civil penalty", "prosecut", "unlicensed",
+                                     "rogue landlord"]),
     ("Possession & eviction",      ["possession", "eviction", "bailiff"]),
     ("Energy & standards",         ["epc", "mees", "energy efficiency", "awaab",
                                      "damp and mould", "decent homes", "hazard"]),
     ("Council tax & empty homes",  ["empty homes", "second homes",
                                      "council tax premium", "long-term empty"]),
+    # Catch-all for licensing stories that didn't match a specific scheme above.
+    ("Landlord licensing (other)", ["landlord licensing", "landlord licence",
+                                     "licensing scheme", "licence scheme",
+                                     "property licensing", "property licence",
+                                     "licensing designation", "licensing consultation",
+                                     "licensing", "licence"]),
 ]
 DEFAULT_CATEGORY = "Other PRS news"
  
@@ -215,6 +233,18 @@ def tidy_summary(summary: str, title: str, source: str) -> str:
 # RELEVANCE, GEOTAGGING, CATEGORISATION                                        #
 # --------------------------------------------------------------------------- #
  
+_NORMALISE_MAP = str.maketrans({
+    "\u2019": "'", "\u2018": "'", "\u201c": '"', "\u201d": '"',
+    "\u2013": "-", "\u2014": "-",
+})
+ 
+ 
+def normalise(s: str) -> str:
+    """Lowercase and flatten curly quotes/dashes so keyword matching is reliable
+    (e.g. 'Renters' Rights' with a typographic apostrophe still matches)."""
+    return (s or "").translate(_NORMALISE_MAP).lower()
+ 
+ 
 def score_relevance(text_lc: str):
     """Return (is_relevant, score). Score is for ranking only."""
     context_hits = {t for t in PRS_CONTEXT_TERMS if t in text_lc}
@@ -241,14 +271,14 @@ def build_geo_index(authorities):
         terms = [a["name"]] + a.get("aliases", [])
         for t in terms:
             if len(t) >= 3:
-                index.append((t.lower(), a))
+                index.append((normalise(t), a))
     index.sort(key=lambda x: len(x[0]), reverse=True)
     return index
  
  
 def geotag(text, geo_index):
     """Return list of matched authority records (word-boundary matched)."""
-    text_lc = text.lower()
+    text_lc = normalise(text)
     matched, seen = [], set()
     for term_lc, a in geo_index:
         if a["code"] in seen:
@@ -330,7 +360,14 @@ def process_entries(entries, fetch_method, geo_index, seen_guids,
         if source and display_title.endswith(" - " + source):
             display_title = display_title[: -(len(source) + 3)].strip()
  
-        haystack = (display_title + " " + summary).lower()
+        # Rolling window: skip anything published before the cutoff so the
+        # database stays a genuine last-N-days view (Google News will otherwise
+        # backfill years of archive on the first run).
+        published = entry_date(e)
+        if published < WINDOW_CUTOFF:
+            continue
+ 
+        haystack = normalise(display_title + " " + summary)
         relevant, score = score_relevance(haystack)
         if not relevant:
             continue
@@ -366,7 +403,7 @@ def process_entries(entries, fetch_method, geo_index, seen_guids,
         batch_titles.append((display_title, source))
         rows.append({
             "guid": guid, "url": e.get("link", ""), "title": display_title,
-            "source": source, "published": entry_date(e),
+            "source": source, "published": published,
             "first_seen": date.today().isoformat(),
             "summary": tidy_summary(summary, display_title, source),
             "nation": nation, "region": region, "primary_la": primary_la,
@@ -391,9 +428,7 @@ def insert_rows(con, rows):
  
 def prune(con):
     cutoff = (date.today() - timedelta(days=RETENTION_DAYS)).isoformat()
-    cur = con.execute(
-        "DELETE FROM articles WHERE published < ? AND first_seen < ?",
-        (cutoff, cutoff))
+    cur = con.execute("DELETE FROM articles WHERE published < ?", (cutoff,))
     con.commit()
     return cur.rowcount
  
@@ -429,7 +464,8 @@ def main():
     for i, a in enumerate(authorities, 1):
         names = [a["name"]] + [x for x in a.get("aliases", []) if len(x) > 3]
         name_clause = " OR ".join(f'"{n}"' for n in names[:4])
-        query = f'({GEO_QUERY_TERMS}) ({name_clause})'
+        terms = GEO_QUERY_TERMS_WALES if a["nation"] == "Wales" else GEO_QUERY_TERMS
+        query = f'({terms}) ({name_clause})'
         d = fetch_feed(gnews_url(query))
         if d is None:
             failures += 1
