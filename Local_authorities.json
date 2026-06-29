@@ -1,0 +1,2292 @@
+{
+  "source": "ONS Open Geography Portal — Local Authority Districts (2025)",
+  "generated_note": "Local housing authorities in England and Wales. Counties excluded (districts are the housing authorities).",
+  "count": 318,
+  "authorities": [
+    {
+      "code": "E07000032",
+      "name": "Amber Valley",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000170",
+      "name": "Ashfield",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000171",
+      "name": "Bassetlaw",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000129",
+      "name": "Blaby",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000033",
+      "name": "Bolsover",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000136",
+      "name": "Boston",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000172",
+      "name": "Broxtowe",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000130",
+      "name": "Charnwood",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000034",
+      "name": "Chesterfield",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E06000015",
+      "name": "Derby",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000035",
+      "name": "Derbyshire Dales",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000137",
+      "name": "East Lindsey",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000036",
+      "name": "Erewash",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000173",
+      "name": "Gedling",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000131",
+      "name": "Harborough",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000037",
+      "name": "High Peak",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000132",
+      "name": "Hinckley and Bosworth",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E06000016",
+      "name": "Leicester",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000138",
+      "name": "Lincoln",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000174",
+      "name": "Mansfield",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000133",
+      "name": "Melton",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000175",
+      "name": "Newark and Sherwood",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000038",
+      "name": "North East Derbyshire",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000139",
+      "name": "North Kesteven",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E06000061",
+      "name": "North Northamptonshire",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000134",
+      "name": "North West Leicestershire",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E06000018",
+      "name": "Nottingham",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000135",
+      "name": "Oadby and Wigston",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000176",
+      "name": "Rushcliffe",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E06000017",
+      "name": "Rutland",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000039",
+      "name": "South Derbyshire",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000140",
+      "name": "South Holland",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000141",
+      "name": "South Kesteven",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000142",
+      "name": "West Lindsey",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E06000062",
+      "name": "West Northamptonshire",
+      "nation": "England",
+      "region": "East Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000200",
+      "name": "Babergh",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000066",
+      "name": "Basildon",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E06000055",
+      "name": "Bedford",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000067",
+      "name": "Braintree",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000143",
+      "name": "Breckland",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000068",
+      "name": "Brentwood",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000144",
+      "name": "Broadland",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000095",
+      "name": "Broxbourne",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000008",
+      "name": "Cambridge",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000069",
+      "name": "Castle Point",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E06000056",
+      "name": "Central Bedfordshire",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000070",
+      "name": "Chelmsford",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000071",
+      "name": "Colchester",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000096",
+      "name": "Dacorum",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000009",
+      "name": "East Cambridgeshire",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000242",
+      "name": "East Hertfordshire",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000244",
+      "name": "East Suffolk",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000072",
+      "name": "Epping Forest",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000010",
+      "name": "Fenland",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000145",
+      "name": "Great Yarmouth",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000073",
+      "name": "Harlow",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000098",
+      "name": "Hertsmere",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000011",
+      "name": "Huntingdonshire",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000202",
+      "name": "Ipswich",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000146",
+      "name": "King's Lynn and West Norfolk",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": [
+        "King's Lynn"
+      ]
+    },
+    {
+      "code": "E06000032",
+      "name": "Luton",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000074",
+      "name": "Maldon",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000203",
+      "name": "Mid Suffolk",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000099",
+      "name": "North Hertfordshire",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000147",
+      "name": "North Norfolk",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000148",
+      "name": "Norwich",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E06000031",
+      "name": "Peterborough",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000075",
+      "name": "Rochford",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000012",
+      "name": "South Cambridgeshire",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000149",
+      "name": "South Norfolk",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E06000033",
+      "name": "Southend-on-Sea",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000240",
+      "name": "St Albans",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": [
+        "St. Albans"
+      ]
+    },
+    {
+      "code": "E07000243",
+      "name": "Stevenage",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000076",
+      "name": "Tendring",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000102",
+      "name": "Three Rivers",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E06000034",
+      "name": "Thurrock",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000077",
+      "name": "Uttlesford",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000103",
+      "name": "Watford",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000241",
+      "name": "Welwyn Hatfield",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E07000245",
+      "name": "West Suffolk",
+      "nation": "England",
+      "region": "East of England",
+      "aliases": []
+    },
+    {
+      "code": "E09000002",
+      "name": "Barking and Dagenham",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000003",
+      "name": "Barnet",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000004",
+      "name": "Bexley",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000005",
+      "name": "Brent",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000006",
+      "name": "Bromley",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000007",
+      "name": "Camden",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000001",
+      "name": "City of London",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000008",
+      "name": "Croydon",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000009",
+      "name": "Ealing",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000010",
+      "name": "Enfield",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000011",
+      "name": "Greenwich",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000012",
+      "name": "Hackney",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000013",
+      "name": "Hammersmith and Fulham",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000014",
+      "name": "Haringey",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000015",
+      "name": "Harrow",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000016",
+      "name": "Havering",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000017",
+      "name": "Hillingdon",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000018",
+      "name": "Hounslow",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000019",
+      "name": "Islington",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000020",
+      "name": "Kensington and Chelsea",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000021",
+      "name": "Kingston upon Thames",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000022",
+      "name": "Lambeth",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000023",
+      "name": "Lewisham",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000024",
+      "name": "Merton",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000025",
+      "name": "Newham",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000026",
+      "name": "Redbridge",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000027",
+      "name": "Richmond upon Thames",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000028",
+      "name": "Southwark",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000029",
+      "name": "Sutton",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000030",
+      "name": "Tower Hamlets",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000031",
+      "name": "Waltham Forest",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000032",
+      "name": "Wandsworth",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E09000033",
+      "name": "Westminster",
+      "nation": "England",
+      "region": "London",
+      "aliases": []
+    },
+    {
+      "code": "E06000047",
+      "name": "County Durham",
+      "nation": "England",
+      "region": "North East",
+      "aliases": [
+        "Durham"
+      ]
+    },
+    {
+      "code": "E06000005",
+      "name": "Darlington",
+      "nation": "England",
+      "region": "North East",
+      "aliases": []
+    },
+    {
+      "code": "E08000037",
+      "name": "Gateshead",
+      "nation": "England",
+      "region": "North East",
+      "aliases": []
+    },
+    {
+      "code": "E06000001",
+      "name": "Hartlepool",
+      "nation": "England",
+      "region": "North East",
+      "aliases": []
+    },
+    {
+      "code": "E06000002",
+      "name": "Middlesbrough",
+      "nation": "England",
+      "region": "North East",
+      "aliases": []
+    },
+    {
+      "code": "E08000021",
+      "name": "Newcastle upon Tyne",
+      "nation": "England",
+      "region": "North East",
+      "aliases": [
+        "Newcastle"
+      ]
+    },
+    {
+      "code": "E08000022",
+      "name": "North Tyneside",
+      "nation": "England",
+      "region": "North East",
+      "aliases": []
+    },
+    {
+      "code": "E06000057",
+      "name": "Northumberland",
+      "nation": "England",
+      "region": "North East",
+      "aliases": []
+    },
+    {
+      "code": "E06000003",
+      "name": "Redcar and Cleveland",
+      "nation": "England",
+      "region": "North East",
+      "aliases": []
+    },
+    {
+      "code": "E08000023",
+      "name": "South Tyneside",
+      "nation": "England",
+      "region": "North East",
+      "aliases": []
+    },
+    {
+      "code": "E06000004",
+      "name": "Stockton-on-Tees",
+      "nation": "England",
+      "region": "North East",
+      "aliases": []
+    },
+    {
+      "code": "E08000024",
+      "name": "Sunderland",
+      "nation": "England",
+      "region": "North East",
+      "aliases": []
+    },
+    {
+      "code": "E06000008",
+      "name": "Blackburn with Darwen",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E06000009",
+      "name": "Blackpool",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E08000001",
+      "name": "Bolton",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E07000117",
+      "name": "Burnley",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E08000002",
+      "name": "Bury",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E06000049",
+      "name": "Cheshire East",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E06000050",
+      "name": "Cheshire West and Chester",
+      "nation": "England",
+      "region": "North West",
+      "aliases": [
+        "Cheshire West"
+      ]
+    },
+    {
+      "code": "E07000118",
+      "name": "Chorley",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E06000063",
+      "name": "Cumberland",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E07000119",
+      "name": "Fylde",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E06000006",
+      "name": "Halton",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E07000120",
+      "name": "Hyndburn",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E08000011",
+      "name": "Knowsley",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E07000121",
+      "name": "Lancaster",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E08000012",
+      "name": "Liverpool",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E08000003",
+      "name": "Manchester",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E08000004",
+      "name": "Oldham",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E07000122",
+      "name": "Pendle",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E07000123",
+      "name": "Preston",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E07000124",
+      "name": "Ribble Valley",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E08000005",
+      "name": "Rochdale",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E07000125",
+      "name": "Rossendale",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E08000006",
+      "name": "Salford",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E08000014",
+      "name": "Sefton",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E07000126",
+      "name": "South Ribble",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E08000013",
+      "name": "St. Helens",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E08000007",
+      "name": "Stockport",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E08000008",
+      "name": "Tameside",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E08000009",
+      "name": "Trafford",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E06000007",
+      "name": "Warrington",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E07000127",
+      "name": "West Lancashire",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E06000064",
+      "name": "Westmorland and Furness",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E08000010",
+      "name": "Wigan",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E08000015",
+      "name": "Wirral",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E07000128",
+      "name": "Wyre",
+      "nation": "England",
+      "region": "North West",
+      "aliases": []
+    },
+    {
+      "code": "E07000223",
+      "name": "Adur",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000224",
+      "name": "Arun",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000105",
+      "name": "Ashford",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000084",
+      "name": "Basingstoke and Deane",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E06000036",
+      "name": "Bracknell Forest",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E06000043",
+      "name": "Brighton and Hove",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E06000060",
+      "name": "Buckinghamshire",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000106",
+      "name": "Canterbury",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000177",
+      "name": "Cherwell",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000225",
+      "name": "Chichester",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000226",
+      "name": "Crawley",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000107",
+      "name": "Dartford",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000108",
+      "name": "Dover",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000085",
+      "name": "East Hampshire",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000061",
+      "name": "Eastbourne",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000086",
+      "name": "Eastleigh",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000207",
+      "name": "Elmbridge",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000208",
+      "name": "Epsom and Ewell",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000087",
+      "name": "Fareham",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000112",
+      "name": "Folkestone and Hythe",
+      "nation": "England",
+      "region": "South East",
+      "aliases": [
+        "Shepway"
+      ]
+    },
+    {
+      "code": "E07000088",
+      "name": "Gosport",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000109",
+      "name": "Gravesham",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000209",
+      "name": "Guildford",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000089",
+      "name": "Hart",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000062",
+      "name": "Hastings",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000090",
+      "name": "Havant",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000227",
+      "name": "Horsham",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E06000046",
+      "name": "Isle of Wight",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000063",
+      "name": "Lewes",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000110",
+      "name": "Maidstone",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E06000035",
+      "name": "Medway",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000228",
+      "name": "Mid Sussex",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E06000042",
+      "name": "Milton Keynes",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000210",
+      "name": "Mole Valley",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000091",
+      "name": "New Forest",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000178",
+      "name": "Oxford",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E06000044",
+      "name": "Portsmouth",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E06000038",
+      "name": "Reading",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000211",
+      "name": "Reigate and Banstead",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000064",
+      "name": "Rother",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000212",
+      "name": "Runnymede",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000092",
+      "name": "Rushmoor",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000111",
+      "name": "Sevenoaks",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E06000039",
+      "name": "Slough",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000179",
+      "name": "South Oxfordshire",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E06000045",
+      "name": "Southampton",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000213",
+      "name": "Spelthorne",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000214",
+      "name": "Surrey Heath",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000113",
+      "name": "Swale",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000215",
+      "name": "Tandridge",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000093",
+      "name": "Test Valley",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000114",
+      "name": "Thanet",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000115",
+      "name": "Tonbridge and Malling",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000116",
+      "name": "Tunbridge Wells",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000180",
+      "name": "Vale of White Horse",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000216",
+      "name": "Waverley",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000065",
+      "name": "Wealden",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E06000037",
+      "name": "West Berkshire",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000181",
+      "name": "West Oxfordshire",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000094",
+      "name": "Winchester",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E06000040",
+      "name": "Windsor and Maidenhead",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000217",
+      "name": "Woking",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E06000041",
+      "name": "Wokingham",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E07000229",
+      "name": "Worthing",
+      "nation": "England",
+      "region": "South East",
+      "aliases": []
+    },
+    {
+      "code": "E06000022",
+      "name": "Bath and North East Somerset",
+      "nation": "England",
+      "region": "South West",
+      "aliases": []
+    },
+    {
+      "code": "E06000058",
+      "name": "Bournemouth, Christchurch and Poole",
+      "nation": "England",
+      "region": "South West",
+      "aliases": [
+        "BCP",
+        "Bournemouth",
+        "Christchurch",
+        "Poole"
+      ]
+    },
+    {
+      "code": "E06000023",
+      "name": "Bristol",
+      "nation": "England",
+      "region": "South West",
+      "aliases": [
+        "Bristol",
+        "Bristol, City of"
+      ]
+    },
+    {
+      "code": "E07000078",
+      "name": "Cheltenham",
+      "nation": "England",
+      "region": "South West",
+      "aliases": []
+    },
+    {
+      "code": "E06000052",
+      "name": "Cornwall",
+      "nation": "England",
+      "region": "South West",
+      "aliases": []
+    },
+    {
+      "code": "E07000079",
+      "name": "Cotswold",
+      "nation": "England",
+      "region": "South West",
+      "aliases": []
+    },
+    {
+      "code": "E06000059",
+      "name": "Dorset",
+      "nation": "England",
+      "region": "South West",
+      "aliases": []
+    },
+    {
+      "code": "E07000040",
+      "name": "East Devon",
+      "nation": "England",
+      "region": "South West",
+      "aliases": []
+    },
+    {
+      "code": "E07000041",
+      "name": "Exeter",
+      "nation": "England",
+      "region": "South West",
+      "aliases": []
+    },
+    {
+      "code": "E07000080",
+      "name": "Forest of Dean",
+      "nation": "England",
+      "region": "South West",
+      "aliases": []
+    },
+    {
+      "code": "E07000081",
+      "name": "Gloucester",
+      "nation": "England",
+      "region": "South West",
+      "aliases": []
+    },
+    {
+      "code": "E06000053",
+      "name": "Isles of Scilly",
+      "nation": "England",
+      "region": "South West",
+      "aliases": []
+    },
+    {
+      "code": "E07000042",
+      "name": "Mid Devon",
+      "nation": "England",
+      "region": "South West",
+      "aliases": []
+    },
+    {
+      "code": "E07000043",
+      "name": "North Devon",
+      "nation": "England",
+      "region": "South West",
+      "aliases": []
+    },
+    {
+      "code": "E07000083",
+      "name": "North Gloucestershire",
+      "nation": "England",
+      "region": "South West",
+      "aliases": []
+    },
+    {
+      "code": "E06000024",
+      "name": "North Somerset",
+      "nation": "England",
+      "region": "South West",
+      "aliases": []
+    },
+    {
+      "code": "E06000026",
+      "name": "Plymouth",
+      "nation": "England",
+      "region": "South West",
+      "aliases": []
+    },
+    {
+      "code": "E06000066",
+      "name": "Somerset",
+      "nation": "England",
+      "region": "South West",
+      "aliases": []
+    },
+    {
+      "code": "E06000025",
+      "name": "South Gloucestershire",
+      "nation": "England",
+      "region": "South West",
+      "aliases": []
+    },
+    {
+      "code": "E07000044",
+      "name": "South Hams",
+      "nation": "England",
+      "region": "South West",
+      "aliases": []
+    },
+    {
+      "code": "E07000082",
+      "name": "Stroud",
+      "nation": "England",
+      "region": "South West",
+      "aliases": []
+    },
+    {
+      "code": "E06000030",
+      "name": "Swindon",
+      "nation": "England",
+      "region": "South West",
+      "aliases": []
+    },
+    {
+      "code": "E07000045",
+      "name": "Teignbridge",
+      "nation": "England",
+      "region": "South West",
+      "aliases": []
+    },
+    {
+      "code": "E06000027",
+      "name": "Torbay",
+      "nation": "England",
+      "region": "South West",
+      "aliases": []
+    },
+    {
+      "code": "E07000046",
+      "name": "Torridge",
+      "nation": "England",
+      "region": "South West",
+      "aliases": []
+    },
+    {
+      "code": "E07000047",
+      "name": "West Devon",
+      "nation": "England",
+      "region": "South West",
+      "aliases": []
+    },
+    {
+      "code": "E06000054",
+      "name": "Wiltshire",
+      "nation": "England",
+      "region": "South West",
+      "aliases": []
+    },
+    {
+      "code": "E08000025",
+      "name": "Birmingham",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000234",
+      "name": "Bromsgrove",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000192",
+      "name": "Cannock Chase",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E08000026",
+      "name": "Coventry",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E08000027",
+      "name": "Dudley",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000193",
+      "name": "East Staffordshire",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E06000019",
+      "name": "Herefordshire",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": [
+        "Herefordshire",
+        "Herefordshire, County of"
+      ]
+    },
+    {
+      "code": "E07000194",
+      "name": "Lichfield",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000235",
+      "name": "Malvern Hills",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000195",
+      "name": "Newcastle-under-Lyme",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000218",
+      "name": "North Warwickshire",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000219",
+      "name": "Nuneaton and Bedworth",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000236",
+      "name": "Redditch",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000220",
+      "name": "Rugby",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E08000028",
+      "name": "Sandwell",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E06000051",
+      "name": "Shropshire",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E08000029",
+      "name": "Solihull",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000196",
+      "name": "South Staffordshire",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000197",
+      "name": "Stafford",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000198",
+      "name": "Staffordshire Moorlands",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E06000021",
+      "name": "Stoke-on-Trent",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000221",
+      "name": "Stratford-on-Avon",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000199",
+      "name": "Tamworth",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E06000020",
+      "name": "Telford and Wrekin",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E08000030",
+      "name": "Walsall",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000222",
+      "name": "Warwick",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E08000031",
+      "name": "Wolverhampton",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000237",
+      "name": "Worcester",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000238",
+      "name": "Wychavon",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E07000239",
+      "name": "Wyre Forest",
+      "nation": "England",
+      "region": "West Midlands",
+      "aliases": []
+    },
+    {
+      "code": "E08000038",
+      "name": "Barnsley",
+      "nation": "England",
+      "region": "Yorkshire and The Humber",
+      "aliases": []
+    },
+    {
+      "code": "E08000032",
+      "name": "Bradford",
+      "nation": "England",
+      "region": "Yorkshire and The Humber",
+      "aliases": []
+    },
+    {
+      "code": "E08000033",
+      "name": "Calderdale",
+      "nation": "England",
+      "region": "Yorkshire and The Humber",
+      "aliases": []
+    },
+    {
+      "code": "E08000017",
+      "name": "Doncaster",
+      "nation": "England",
+      "region": "Yorkshire and The Humber",
+      "aliases": []
+    },
+    {
+      "code": "E06000011",
+      "name": "East Riding of Yorkshire",
+      "nation": "England",
+      "region": "Yorkshire and The Humber",
+      "aliases": []
+    },
+    {
+      "code": "E06000010",
+      "name": "Kingston upon Hull",
+      "nation": "England",
+      "region": "Yorkshire and The Humber",
+      "aliases": [
+        "Hull",
+        "Kingston upon Hull, City of"
+      ]
+    },
+    {
+      "code": "E08000034",
+      "name": "Kirklees",
+      "nation": "England",
+      "region": "Yorkshire and The Humber",
+      "aliases": []
+    },
+    {
+      "code": "E08000035",
+      "name": "Leeds",
+      "nation": "England",
+      "region": "Yorkshire and The Humber",
+      "aliases": []
+    },
+    {
+      "code": "E06000012",
+      "name": "North East Lincolnshire",
+      "nation": "England",
+      "region": "Yorkshire and The Humber",
+      "aliases": []
+    },
+    {
+      "code": "E06000013",
+      "name": "North Lincolnshire",
+      "nation": "England",
+      "region": "Yorkshire and The Humber",
+      "aliases": []
+    },
+    {
+      "code": "E06000065",
+      "name": "North Yorkshire",
+      "nation": "England",
+      "region": "Yorkshire and The Humber",
+      "aliases": []
+    },
+    {
+      "code": "E08000018",
+      "name": "Rotherham",
+      "nation": "England",
+      "region": "Yorkshire and The Humber",
+      "aliases": []
+    },
+    {
+      "code": "E08000039",
+      "name": "Sheffield",
+      "nation": "England",
+      "region": "Yorkshire and The Humber",
+      "aliases": []
+    },
+    {
+      "code": "E08000036",
+      "name": "Wakefield",
+      "nation": "England",
+      "region": "Yorkshire and The Humber",
+      "aliases": []
+    },
+    {
+      "code": "E06000014",
+      "name": "York",
+      "nation": "England",
+      "region": "Yorkshire and The Humber",
+      "aliases": []
+    },
+    {
+      "code": "W06000008",
+      "name": "Ceredigion",
+      "nation": "Wales",
+      "region": "Mid Wales",
+      "aliases": []
+    },
+    {
+      "code": "W06000023",
+      "name": "Powys",
+      "nation": "Wales",
+      "region": "Mid Wales",
+      "aliases": []
+    },
+    {
+      "code": "W06000003",
+      "name": "Conwy",
+      "nation": "Wales",
+      "region": "North Wales",
+      "aliases": []
+    },
+    {
+      "code": "W06000004",
+      "name": "Denbighshire",
+      "nation": "Wales",
+      "region": "North Wales",
+      "aliases": [
+        "Sir Ddinbych"
+      ]
+    },
+    {
+      "code": "W06000005",
+      "name": "Flintshire",
+      "nation": "Wales",
+      "region": "North Wales",
+      "aliases": [
+        "Sir y Fflint"
+      ]
+    },
+    {
+      "code": "W06000002",
+      "name": "Gwynedd",
+      "nation": "Wales",
+      "region": "North Wales",
+      "aliases": []
+    },
+    {
+      "code": "W06000001",
+      "name": "Isle of Anglesey",
+      "nation": "Wales",
+      "region": "North Wales",
+      "aliases": [
+        "Ynys Môn"
+      ]
+    },
+    {
+      "code": "W06000006",
+      "name": "Wrexham",
+      "nation": "Wales",
+      "region": "North Wales",
+      "aliases": [
+        "Wrecsam"
+      ]
+    },
+    {
+      "code": "W06000019",
+      "name": "Blaenau Gwent",
+      "nation": "Wales",
+      "region": "South East Wales",
+      "aliases": []
+    },
+    {
+      "code": "W06000013",
+      "name": "Bridgend",
+      "nation": "Wales",
+      "region": "South East Wales",
+      "aliases": [
+        "Pen-y-bont ar Ogwr"
+      ]
+    },
+    {
+      "code": "W06000018",
+      "name": "Caerphilly",
+      "nation": "Wales",
+      "region": "South East Wales",
+      "aliases": [
+        "Caerffili"
+      ]
+    },
+    {
+      "code": "W06000015",
+      "name": "Cardiff",
+      "nation": "Wales",
+      "region": "South East Wales",
+      "aliases": [
+        "Caerdydd"
+      ]
+    },
+    {
+      "code": "W06000024",
+      "name": "Merthyr Tydfil",
+      "nation": "Wales",
+      "region": "South East Wales",
+      "aliases": [
+        "Merthyr Tudful"
+      ]
+    },
+    {
+      "code": "W06000021",
+      "name": "Monmouthshire",
+      "nation": "Wales",
+      "region": "South East Wales",
+      "aliases": [
+        "Sir Fynwy"
+      ]
+    },
+    {
+      "code": "W06000022",
+      "name": "Newport",
+      "nation": "Wales",
+      "region": "South East Wales",
+      "aliases": [
+        "Casnewydd"
+      ]
+    },
+    {
+      "code": "W06000016",
+      "name": "Rhondda Cynon Taf",
+      "nation": "Wales",
+      "region": "South East Wales",
+      "aliases": [
+        "RCT",
+        "Rhondda Cynon Taff"
+      ]
+    },
+    {
+      "code": "W06000020",
+      "name": "Torfaen",
+      "nation": "Wales",
+      "region": "South East Wales",
+      "aliases": []
+    },
+    {
+      "code": "W06000014",
+      "name": "Vale of Glamorgan",
+      "nation": "Wales",
+      "region": "South East Wales",
+      "aliases": [
+        "Bro Morgannwg"
+      ]
+    },
+    {
+      "code": "W06000010",
+      "name": "Carmarthenshire",
+      "nation": "Wales",
+      "region": "South West Wales",
+      "aliases": [
+        "Sir Gaerfyrddin"
+      ]
+    },
+    {
+      "code": "W06000012",
+      "name": "Neath Port Talbot",
+      "nation": "Wales",
+      "region": "South West Wales",
+      "aliases": [
+        "Castell-nedd Port Talbot"
+      ]
+    },
+    {
+      "code": "W06000009",
+      "name": "Pembrokeshire",
+      "nation": "Wales",
+      "region": "South West Wales",
+      "aliases": [
+        "Sir Benfro"
+      ]
+    },
+    {
+      "code": "W06000011",
+      "name": "Swansea",
+      "nation": "Wales",
+      "region": "South West Wales",
+      "aliases": [
+        "Abertawe"
+      ]
+    }
+  ]
+}
