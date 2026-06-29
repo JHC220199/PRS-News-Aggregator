@@ -95,6 +95,33 @@
   .empty{background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:40px 24px;text-align:center;color:var(--muted)}
   .empty strong{display:block;color:var(--ink);font-size:16px;margin-bottom:6px;font-family:"Space Grotesk",sans-serif}
   footer{max-width:1200px;margin:0 auto;padding:8px 24px 40px;color:var(--muted);font-size:12.5px}
+ 
+  .wrap[hidden],.wrap-map[hidden]{display:none}
+  /* Tabs */
+  .tabs{max-width:1200px;margin:0 auto;padding:14px 24px 0;display:flex;gap:6px}
+  .tab{border:0;background:none;font:inherit;font-family:"Space Grotesk",sans-serif;font-size:15px;font-weight:600;color:var(--muted);padding:9px 4px;margin-right:18px;cursor:pointer;border-bottom:3px solid transparent}
+  .tab[aria-selected="true"]{color:var(--blue);border-bottom-color:var(--orange)}
+ 
+  /* Map view */
+  .wrap-map{max-width:1200px;margin:0 auto;padding:18px 24px}
+  .map-panel{padding:20px 22px}
+  .map-head h2{font-family:"Space Grotesk",sans-serif;font-size:18px;font-weight:600;margin:0 0 4px}
+  .map-hint{margin:0 0 8px;color:var(--muted);font-size:13.5px}
+  .map-stage{position:relative;display:flex;justify-content:center}
+  #map-svg{width:100%;max-width:560px;height:auto}
+  .map-region{stroke:#FCFCFC;stroke-width:1;cursor:pointer;transition:opacity .12s}
+  .map-region:hover{opacity:.82}
+  .map-region.sel{stroke:var(--orange);stroke-width:2.4}
+  .map-tip{position:absolute;pointer-events:none;background:var(--blue-700);color:#FCFCFC;padding:7px 10px;border-radius:8px;font-size:12.5px;line-height:1.35;z-index:5;white-space:nowrap;transform:translate(-50%,-115%)}
+  .map-tip b{font-weight:600}
+  .map-foot{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:14px;flex-wrap:wrap}
+  .legend{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+  .legend .scale{display:flex}
+  .legend .swatch{width:26px;height:12px}
+  .legend .swatch:first-child{border-radius:3px 0 0 3px}
+  .legend .swatch:last-child{border-radius:0 3px 3px 0}
+  .map-national{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font:inherit;font-size:13px;color:var(--blue);cursor:pointer}
+  .map-national:hover{border-color:var(--blue);background:var(--blue-tint)}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -112,7 +139,12 @@
   </div>
 </header>
  
-<div class="wrap">
+<nav class="tabs" aria-label="Views">
+  <button id="tab-stories" class="tab" aria-selected="true">Stories</button>
+  <button id="tab-map" class="tab" aria-selected="false">Map</button>
+</nav>
+ 
+<div class="wrap" id="view-stories">
   <aside aria-label="Filters">
     <div class="panel">
       <h2>Search</h2>
@@ -154,9 +186,27 @@
   </main>
 </div>
  
+<section class="wrap-map" id="view-map" hidden aria-label="Regional map">
+  <div class="panel map-panel">
+    <div class="map-head">
+      <h2>Coverage by region</h2>
+      <p class="map-hint">Darker areas have more stories. Select a region to read its news.</p>
+    </div>
+    <div class="map-stage">
+      <svg id="map-svg" role="img" aria-label="Map of England and Wales regions, shaded by story count"></svg>
+      <div id="map-tip" class="map-tip" hidden></div>
+    </div>
+    <div class="map-foot">
+      <div class="legend" id="map-legend"></div>
+      <button class="map-national" id="map-national" type="button"></button>
+    </div>
+  </div>
+</section>
+ 
 <footer id="footer"></footer>
  
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
 <script>
 const REGION_ORDER = [
   "North East","North West","Yorkshire and The Humber","East Midlands",
@@ -197,6 +247,7 @@ async function boot(){
   renderChips();
   renderCoverage();
   bindControls();
+  setupTabs();
   render();
 }
  
@@ -308,6 +359,97 @@ function render(){
       ${r.summary?`<p class="summary">${esc(r.summary.slice(0,220))}${r.summary.length>220?"…":""}</p>`:""}
     </article>`;
   }).join("");
+}
+ 
+/* ---- Tabs + regional map ---- */
+let mapDrawn = false;
+function setupTabs(){
+  $("#tab-stories").onclick = ()=>showView("stories");
+  $("#tab-map").onclick = ()=>showView("map");
+  $("#map-national").onclick = ()=>{ selectRegion("National / cross-cutting"); };
+}
+function showView(v){
+  const onMap = v==="map";
+  $("#view-stories").hidden = onMap;
+  $("#view-map").hidden = !onMap;
+  $("#tab-stories").setAttribute("aria-selected", String(!onMap));
+  $("#tab-map").setAttribute("aria-selected", String(onMap));
+  if(onMap && !mapDrawn){ drawMap(); }
+  if(onMap) syncMapSelection();
+  window.scrollTo({top:0,behavior:"auto"});
+}
+function selectRegion(name){
+  state.region = name;
+  syncPressed();
+  showView("stories");
+  render();
+}
+function regionCounts(){
+  const c={};
+  state.rows.forEach(r=>{ c[r.region]=(c[r.region]||0)+1; });
+  return c;
+}
+function syncMapSelection(){
+  d3.selectAll(".map-region").classed("sel", function(){
+    return this.getAttribute("data-region")===state.region;
+  });
+}
+ 
+async function drawMap(){
+  mapDrawn = true;
+  let geo;
+  try{
+    geo = await fetch("regions.geojson",{cache:"force-cache"}).then(r=>{if(!r.ok)throw 0;return r.json();});
+  }catch(e){
+    $("#view-map").querySelector(".map-stage").innerHTML =
+      `<div class="empty"><strong>The map couldn't load</strong>regions.geojson may be missing from the repository.</div>`;
+    return;
+  }
+  const counts = regionCounts();
+  const max = Math.max(1, ...geo.features.map(f=>counts[f.properties.region]||0));
+ 
+  const W=560, H=620;
+  const svg = d3.select("#map-svg").attr("viewBox",`0 0 ${W} ${H}`);
+  const proj = d3.geoMercator().fitExtent([[12,12],[W-12,H-12]], geo);
+  const path = d3.geoPath(proj);
+  // NRLA blue ramp: pale tint -> dark blue
+  const colour = d3.scaleLinear().domain([0,max])
+    .range(["#E7EEF2","#113B54"]);
+ 
+  const tip = $("#map-tip");
+  svg.selectAll("path").data(geo.features).join("path")
+    .attr("d", path)
+    .attr("class","map-region")
+    .attr("data-region", d=>d.properties.region)
+    .attr("fill", d=>colour(counts[d.properties.region]||0))
+    .attr("tabindex",0)
+    .attr("role","button")
+    .attr("aria-label", d=>`${d.properties.region}: ${counts[d.properties.region]||0} stories`)
+    .on("mousemove", function(ev,d){
+      const stage = this.ownerSVGElement.parentNode.getBoundingClientRect();
+      const n = counts[d.properties.region]||0;
+      tip.hidden=false;
+      tip.innerHTML = `<b>${d.properties.region}</b><br>${n} ${n===1?"story":"stories"}`;
+      tip.style.left = (ev.clientX-stage.left)+"px";
+      tip.style.top  = (ev.clientY-stage.top)+"px";
+    })
+    .on("mouseleave", ()=>{tip.hidden=true;})
+    .on("click", (ev,d)=>selectRegion(d.properties.region))
+    .on("keydown", (ev,d)=>{ if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();selectRegion(d.properties.region);} });
+ 
+  // Legend
+  $("#map-legend").innerHTML =
+    `<span>Fewer</span><span class="scale">${
+      [0,.25,.5,.75,1].map(t=>`<span class="swatch" style="background:${colour(t*max)}"></span>`).join("")
+    }</span><span>More</span>`;
+ 
+  // National / cross-cutting button (no geography, so it sits beside the map)
+  const nat = counts["National / cross-cutting"]||0;
+  const nbtn = $("#map-national");
+  if(nat){ nbtn.textContent = `View ${nat} national / cross-cutting ${nat===1?"story":"stories"}`; nbtn.hidden=false; }
+  else { nbtn.hidden=true; }
+ 
+  syncMapSelection();
 }
  
 $("#footer").innerHTML = "Sources: Google News, GOV.UK (MHCLG), local-government and trade press. A read-only discovery tool to surface local PRS stories — always verify against the original source before publishing.";
