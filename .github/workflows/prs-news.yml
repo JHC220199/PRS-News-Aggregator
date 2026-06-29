@@ -1,0 +1,46 @@
+name: PRS local news monitor
+ 
+on:
+  schedule:
+    # 06:40 UTC daily (early morning UK). Adjust as needed.
+    - cron: "40 6 * * *"
+  workflow_dispatch:        # allows manual runs from the Actions tab
+ 
+permissions:
+  contents: write           # needed to commit the updated database back
+ 
+concurrency:
+  group: prs-news
+  cancel-in-progress: false
+ 
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+ 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+ 
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+ 
+      - name: Run the monitor
+        run: python prs_news_monitor.py
+ 
+      - name: Commit the updated database
+        run: |
+          git config user.name  "prs-news-bot"
+          git config user.email "actions@github.com"
+          git add prs_news.db
+          if git diff --staged --quiet; then
+            echo "No database changes to commit."
+          else
+            git commit -m "Update PRS news database ($(date -u +%Y-%m-%d))"
+            git push
+          fi
+ 
