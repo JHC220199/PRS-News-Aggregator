@@ -1,0 +1,4 @@
+Requirements · TXT
+feedparser>=6.0
+rapidfuzz>=3.0
+ 
