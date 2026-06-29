@@ -120,8 +120,9 @@
   .legend .swatch{width:26px;height:12px}
   .legend .swatch:first-child{border-radius:3px 0 0 3px}
   .legend .swatch:last-child{border-radius:0 3px 3px 0}
-  .map-national{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font:inherit;font-size:13px;color:var(--blue);cursor:pointer}
-  .map-national:hover{border-color:var(--blue);background:var(--blue-tint)}
+  .map-extra{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+  .map-extra button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font:inherit;font-size:13px;color:var(--blue);cursor:pointer}
+  .map-extra button:hover{border-color:var(--blue);background:var(--blue-tint)}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -198,7 +199,7 @@
     </div>
     <div class="map-foot">
       <div class="legend" id="map-legend"></div>
-      <button class="map-national" id="map-national" type="button"></button>
+      <div class="map-extra" id="map-extra"></div>
     </div>
   </div>
 </section>
@@ -211,10 +212,10 @@
 const REGION_ORDER = [
   "North East","North West","Yorkshire and The Humber","East Midlands",
   "West Midlands","East of England","London","South East","South West",
-  "North Wales","Mid Wales","South West Wales","South East Wales",
+  "North Wales","Mid Wales","South West Wales","South East Wales","Wales (national)",
   "Multiple regions","National / cross-cutting"
 ];
-const WELSH_REGIONS = new Set(["North Wales","Mid Wales","South West Wales","South East Wales"]);
+const WELSH_REGIONS = new Set(["North Wales","Mid Wales","South West Wales","South East Wales","Wales (national)"]);
  
 const state = {rows:[], nation:"all", region:null, category:null, q:"", sort:"new"};
 const $ = s => document.querySelector(s);
@@ -366,7 +367,6 @@ let mapDrawn = false;
 function setupTabs(){
   $("#tab-stories").onclick = ()=>showView("stories");
   $("#tab-map").onclick = ()=>showView("map");
-  $("#map-national").onclick = ()=>{ selectRegion("National / cross-cutting"); };
 }
 function showView(v){
   const onMap = v==="map";
@@ -443,11 +443,18 @@ async function drawMap(){
       [0,.25,.5,.75,1].map(t=>`<span class="swatch" style="background:${colour(t*max)}"></span>`).join("")
     }</span><span>More</span>`;
  
-  // National / cross-cutting button (no geography, so it sits beside the map)
-  const nat = counts["National / cross-cutting"]||0;
-  const nbtn = $("#map-national");
-  if(nat){ nbtn.textContent = `View ${nat} national / cross-cutting ${nat===1?"story":"stories"}`; nbtn.hidden=false; }
-  else { nbtn.hidden=true; }
+  // Buckets with no single geography (Wales-wide, national, multiple regions)
+  // sit as buttons beside the map, ordered as in REGION_ORDER.
+  const mapped = new Set(geo.features.map(f=>f.properties.region));
+  const labelFor = r => r==="Wales (national)" ? "Wales-wide"
+                      : r==="National / cross-cutting" ? "national / cross-cutting"
+                      : r==="Multiple regions" ? "multiple regions" : r;
+  const extra = REGION_ORDER.filter(r=>!mapped.has(r) && (counts[r]||0)>0);
+  $("#map-extra").innerHTML = extra.map(r=>{
+    const n = counts[r];
+    return `<button type="button" data-region="${r}">View ${n} ${labelFor(r)} ${n===1?"story":"stories"}</button>`;
+  }).join("");
+  $("#map-extra").querySelectorAll("button").forEach(b=>b.onclick=()=>selectRegion(b.dataset.region));
  
   syncMapSelection();
 }
