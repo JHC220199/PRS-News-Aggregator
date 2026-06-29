@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PRS local news wire — NRLA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#113B54; --blue-700:#0F2636; --orange:#E96C19; --orange-soft:#FBEEE2;
+    --page:#F6F7F8; --card:#FCFCFC; --ink:#0F2636; --muted:#5C6B75;
+    --line:#E2E6E9; --line-soft:#EDEFF1; --blue-tint:#E7EEF2;
+    --radius:8px;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--page); color:var(--ink);
+    font-family:"Inter",system-ui,-apple-system,sans-serif; line-height:1.5;
+    font-size:15px;
+  }
+  a{color:inherit}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+  .skip{position:absolute;left:8px;top:-44px;background:var(--blue);color:#fff;padding:10px 14px;border-radius:var(--radius);transition:top .15s;z-index:50}
+  .skip:focus{top:8px}
+  :focus-visible{outline:3px solid var(--orange);outline-offset:2px;border-radius:4px}
+ 
+  /* ---- Masthead ---- */
+  header.masthead{background:var(--blue);color:#FCFCFC}
+  .masthead-inner{max-width:1200px;margin:0 auto;padding:18px 24px}
+  .brandrow{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .wordmark{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:21px;letter-spacing:-.01em;margin:0}
+  .wordmark .nrla{color:var(--orange)}
+  .tagline{font-size:13px;color:#AFC2CC;margin:0}
+  .updated{margin-left:auto;font-size:12.5px;color:#AFC2CC}
+  .updated strong{color:#FCFCFC;font-weight:500}
+  .stats{display:flex;gap:26px;margin-top:16px;flex-wrap:wrap}
+  .stat .n{font-family:"Space Grotesk",sans-serif;font-size:26px;font-weight:600;line-height:1}
+  .stat .n.accent{color:var(--orange)}
+  .stat .l{font-size:12px;color:#AFC2CC;margin-top:4px}
+ 
+  /* ---- Layout ---- */
+  .wrap{max-width:1200px;margin:0 auto;padding:24px;display:grid;grid-template-columns:288px 1fr;gap:28px;align-items:start}
+  @media (max-width:880px){.wrap{grid-template-columns:1fr;gap:18px}}
+ 
+  /* ---- Sidebar ---- */
+  aside{position:sticky;top:18px;display:flex;flex-direction:column;gap:18px}
+  @media (max-width:880px){aside{position:static}}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .panel h2{font-family:"Space Grotesk",sans-serif;font-size:13px;font-weight:600;text-transform:none;letter-spacing:.02em;color:var(--muted);margin:0 0 12px}
+  .search{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius);font:inherit;background:#fff}
+  .search::placeholder{color:#9AA7AE}
+  .seg{display:flex;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .seg button{flex:1;border:0;background:#fff;padding:8px 4px;font:inherit;font-size:13px;color:var(--muted);cursor:pointer}
+  .seg button[aria-pressed="true"]{background:var(--blue);color:#fff;font-weight:500}
+ 
+  /* Coverage index — the signature element */
+  .cov{display:flex;flex-direction:column}
+  .cov .grp{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#9AA7AE;margin:12px 0 4px;padding-left:2px}
+  .cov .grp:first-child{margin-top:0}
+  .cov button{display:flex;align-items:center;gap:8px;width:100%;border:0;background:none;padding:6px 8px;border-radius:6px;font:inherit;font-size:13.5px;color:var(--ink);cursor:pointer;text-align:left}
+  .cov button:hover{background:var(--line-soft)}
+  .cov button[aria-pressed="true"]{background:var(--blue-tint);font-weight:500}
+  .cov .bar{flex:1;height:5px;border-radius:3px;background:var(--line-soft);overflow:hidden}
+  .cov .bar i{display:block;height:100%;background:var(--blue);border-radius:3px}
+  .cov button[aria-pressed="true"] .bar i{background:var(--orange)}
+  .cov .cnt{min-width:30px;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);font-size:12.5px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 11px;font:inherit;font-size:12.5px;color:var(--muted);cursor:pointer}
+  .chip[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:500}
+  .clearbtn{margin-top:2px;border:0;background:none;color:var(--orange);font:inherit;font-size:13px;cursor:pointer;padding:6px 2px;text-align:left}
+ 
+  /* ---- Story list ---- */
+  .listhead{display:flex;align-items:baseline;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+  .listhead h2{font-family:"Space Grotesk",sans-serif;font-size:18px;font-weight:600;margin:0}
+  .count{color:var(--muted);font-size:13.5px}
+  .sortwrap{margin-left:auto;display:flex;align-items:center;gap:8px}
+  .sortwrap label{font-size:13px;color:var(--muted)}
+  select.sort{padding:7px 10px;border:1px solid var(--line);border-radius:var(--radius);font:inherit;background:#fff}
+ 
+  .story{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin-bottom:10px}
+  .story:hover{border-color:#C9D2D7}
+  .story .top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:7px}
+  .tag{font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--blue-tint);color:var(--blue)}
+  .new{font-size:11px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;padding:3px 9px;border-radius:999px;background:var(--orange-soft);color:#9A4205}
+  .story h3{font-family:"Inter",sans-serif;font-size:16px;font-weight:600;line-height:1.35;margin:0 0 7px}
+  .story h3 a{text-decoration:none}
+  .story h3 a:hover{text-decoration:underline;text-decoration-color:var(--orange)}
+  .meta{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+  .meta .loc{color:var(--blue);font-weight:500}
+  .meta .dot{color:#C2CBD0}
+  .summary{margin:9px 0 0;font-size:13.5px;color:#46535B;line-height:1.55}
+  .empty{background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:40px 24px;text-align:center;color:var(--muted)}
+  .empty strong{display:block;color:var(--ink);font-size:16px;margin-bottom:6px;font-family:"Space Grotesk",sans-serif}
+  footer{max-width:1200px;margin:0 auto;padding:8px 24px 40px;color:var(--muted);font-size:12.5px}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#stories">Skip to stories</a>
+ 
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="brandrow">
+      <h1 class="wordmark"><span class="nrla">NRLA</span> PRS local news wire</h1>
+      <p class="tagline">Local private rented sector stories from across England and Wales</p>
+      <p class="updated" id="updated"></p>
+    </div>
+    <div class="stats" id="stats"></div>
+  </div>
+</header>
+ 
+<div class="wrap">
+  <aside aria-label="Filters">
+    <div class="panel">
+      <h2>Search</h2>
+      <input class="search" id="search" type="search" placeholder="Search titles, sources, areas" autocomplete="off" aria-label="Search stories">
+      <div style="height:14px"></div>
+      <h2>Nation</h2>
+      <div class="seg" role="group" aria-label="Filter by nation">
+        <button data-nation="all" aria-pressed="true">All</button>
+        <button data-nation="England" aria-pressed="false">England</button>
+        <button data-nation="Wales" aria-pressed="false">Wales</button>
+      </div>
+    </div>
+ 
+    <div class="panel">
+      <h2>Theme</h2>
+      <div class="chips" id="chips"></div>
+    </div>
+ 
+    <div class="panel">
+      <h2>Coverage index — by region</h2>
+      <div class="cov" id="coverage" role="group" aria-label="Filter by region"></div>
+      <button class="clearbtn" id="clear" hidden>Clear all filters</button>
+    </div>
+  </aside>
+ 
+  <main id="stories">
+    <div class="listhead">
+      <h2>Stories</h2>
+      <span class="count" id="count"></span>
+      <div class="sortwrap">
+        <label for="sort">Sort</label>
+        <select class="sort" id="sort">
+          <option value="new">Newest first</option>
+          <option value="relevance">Most relevant</option>
+        </select>
+      </div>
+    </div>
+    <div id="list" aria-live="polite"></div>
+  </main>
+</div>
+ 
+<footer id="footer"></footer>
+ 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.min.js"></script>
+<script>
+const REGION_ORDER = [
+  "North East","North West","Yorkshire and The Humber","East Midlands",
+  "West Midlands","East of England","London","South East","South West",
+  "North Wales","Mid Wales","South West Wales","South East Wales",
+  "Multiple regions","National / cross-cutting"
+];
+const WELSH_REGIONS = new Set(["North Wales","Mid Wales","South West Wales","South East Wales"]);
+ 
+const state = {rows:[], nation:"all", region:null, category:null, q:"", sort:"new"};
+const $ = s => document.querySelector(s);
+ 
+function ordinal(d){const n=d.getDate();const s=["th","st","nd","rd"];const v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
+const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+function fmtDate(iso){if(!iso)return"";const d=new Date(iso+"T00:00:00");if(isNaN(d))return iso;return `${ordinal(d)} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;}
+function daysAgo(iso){const d=new Date(iso+"T00:00:00");return (Date.now()-d.getTime())/86400000;}
+function esc(s){return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));}
+ 
+async function boot(){
+  let db;
+  try{
+    const SQL = await initSqlJs({locateFile:f=>`https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/${f}`});
+    const buf = await fetch("prs_news.db",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(r.status);return r.arrayBuffer();});
+    db = new SQL.Database(new Uint8Array(buf));
+  }catch(e){
+    $("#list").innerHTML = `<div class="empty"><strong>The news database hasn't loaded</strong>It updates each morning. If this persists, the daily build may not have run yet.</div>`;
+    return;
+  }
+  const res = db.exec("SELECT title,url,source,published,first_seen,summary,nation,region,primary_la,category,score FROM articles");
+  if(res.length){
+    const cols = res[0].columns;
+    state.rows = res[0].values.map(v=>Object.fromEntries(v.map((x,i)=>[cols[i],x])));
+  }
+  const meta = {};
+  try{db.exec("SELECT key,value FROM meta").forEach(r=>r.values.forEach(([k,v])=>meta[k]=v));}catch(e){}
+ 
+  renderMasthead(meta);
+  renderChips();
+  renderCoverage();
+  bindControls();
+  render();
+}
+ 
+function renderMasthead(meta){
+  const last = meta.last_run ? new Date(meta.last_run) : null;
+  $("#updated").innerHTML = last ? `Updated <strong>${ordinal(last)} ${MONTHS[last.getMonth()]}, ${last.toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})}</strong>` : "";
+  const rows = state.rows;
+  const newWk = rows.filter(r=>daysAgo(r.first_seen)<=7).length;
+  const areas = new Set(rows.filter(r=>r.primary_la).map(r=>r.primary_la)).size;
+  const sel = rows.filter(r=>r.category==="Selective licensing").length;
+  const stats = [
+    {n:rows.length, l:"stories tracked", a:false},
+    {n:newWk, l:"new in last 7 days", a:true},
+    {n:areas, l:"local areas with coverage", a:false},
+    {n:sel, l:"selective licensing items", a:false},
+  ];
+  $("#stats").innerHTML = stats.map(s=>`<div class="stat"><div class="n${s.a?" accent":""}">${s.n.toLocaleString("en-GB")}</div><div class="l">${s.l}</div></div>`).join("");
+}
+ 
+function renderChips(){
+  const cats={};
+  state.rows.forEach(r=>cats[r.category]=(cats[r.category]||0)+1);
+  const ordered=Object.keys(cats).sort((a,b)=>cats[b]-cats[a]);
+  $("#chips").innerHTML = ordered.map(c=>`<button class="chip" data-cat="${esc(c)}" aria-pressed="false">${esc(c)} <span style="opacity:.6">${cats[c]}</span></button>`).join("");
+  $("#chips").querySelectorAll(".chip").forEach(b=>b.onclick=()=>{
+    state.category = state.category===b.dataset.cat ? null : b.dataset.cat;
+    syncPressed(); render();
+  });
+}
+ 
+function renderCoverage(){
+  const counts={};
+  state.rows.forEach(r=>counts[r.region]=(counts[r.region]||0)+1);
+  const regions = REGION_ORDER.filter(r=>counts[r]);
+  const max = Math.max(1,...regions.map(r=>counts[r]));
+  let html="", lastGrp="";
+  const grpOf=r=>WELSH_REGIONS.has(r)?"Wales":(r.startsWith("National")||r==="Multiple regions")?"Cross-cutting":"England";
+  regions.forEach(r=>{
+    const g=grpOf(r);
+    if(g!==lastGrp){html+=`<div class="grp">${g}</div>`;lastGrp=g;}
+    const pct=Math.round(counts[r]/max*100);
+    html+=`<button data-region="${esc(r)}" aria-pressed="false"><span style="flex:0 0 auto;min-width:118px">${esc(r)}</span><span class="bar"><i style="width:${pct}%"></i></span><span class="cnt">${counts[r]}</span></button>`;
+  });
+  $("#coverage").innerHTML=html;
+  $("#coverage").querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    state.region = state.region===b.dataset.region ? null : b.dataset.region;
+    syncPressed(); render();
+  });
+}
+ 
+function bindControls(){
+  $("#search").oninput = e=>{state.q=e.target.value.trim().toLowerCase(); render();};
+  $("#sort").onchange = e=>{state.sort=e.target.value; render();};
+  document.querySelectorAll("[data-nation]").forEach(b=>b.onclick=()=>{
+    state.nation=b.dataset.nation; syncPressed(); render();
+  });
+  $("#clear").onclick=()=>{
+    state.nation="all";state.region=null;state.category=null;state.q="";
+    $("#search").value=""; syncPressed(); render();
+  };
+}
+ 
+function syncPressed(){
+  document.querySelectorAll("[data-nation]").forEach(b=>b.setAttribute("aria-pressed", b.dataset.nation===state.nation));
+  document.querySelectorAll("[data-region]").forEach(b=>b.setAttribute("aria-pressed", b.dataset.region===state.region));
+  document.querySelectorAll("[data-cat]").forEach(b=>b.setAttribute("aria-pressed", b.dataset.cat===state.category));
+  $("#clear").hidden = (state.nation==="all" && !state.region && !state.category && !state.q);
+}
+ 
+function matches(r){
+  if(state.nation!=="all"){
+    if(state.nation==="England" && r.nation!=="England") return false;
+    if(state.nation==="Wales"   && r.nation!=="Wales")   return false;
+  }
+  if(state.region && r.region!==state.region) return false;
+  if(state.category && r.category!==state.category) return false;
+  if(state.q){
+    const hay=(r.title+" "+r.source+" "+r.primary_la+" "+r.region+" "+(r.summary||"")).toLowerCase();
+    if(!hay.includes(state.q)) return false;
+  }
+  return true;
+}
+ 
+function render(){
+  let rows = state.rows.filter(matches);
+  rows.sort(state.sort==="relevance"
+    ? (a,b)=> b.score-a.score || (b.published||"").localeCompare(a.published||"")
+    : (a,b)=> (b.published||"").localeCompare(a.published||"") || b.score-a.score);
+ 
+  $("#count").textContent = `${rows.length.toLocaleString("en-GB")} ${rows.length===1?"story":"stories"}`;
+  const list=$("#list");
+  if(!rows.length){
+    list.innerHTML=`<div class="empty"><strong>No stories match these filters</strong>Try widening the region or clearing the search.</div>`;
+    return;
+  }
+  list.innerHTML = rows.map(r=>{
+    const isNew = daysAgo(r.first_seen)<=7;
+    const loc = r.primary_la ? r.primary_la : (r.region.startsWith("National")?"National":r.region);
+    const bits=[];
+    if(r.source) bits.push(esc(r.source));
+    if(r.published) bits.push(fmtDate(r.published));
+    return `<article class="story">
+      <div class="top">
+        <span class="tag">${esc(r.category)}</span>
+        ${isNew?'<span class="new">New</span>':''}
+      </div>
+      <h3><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.title)}</a></h3>
+      <div class="meta"><span class="loc">${esc(loc)}</span>${bits.map(b=>`<span class="dot">·</span><span>${b}</span>`).join("")}</div>
+      ${r.summary?`<p class="summary">${esc(r.summary.slice(0,220))}${r.summary.length>220?"…":""}</p>`:""}
+    </article>`;
+  }).join("");
+}
+ 
+$("#footer").innerHTML = "Sources: Google News, GOV.UK (MHCLG), local-government and trade press. A read-only discovery tool to surface local PRS stories — always verify against the original source before publishing.";
+boot();
+</script>
+</body>
+</html>
+ 
