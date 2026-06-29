@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+ 
+# Node / local render testing
+node_modules/
+package-lock.json
+package.json
+render_test.mjs
+dashboard_preview.png
+ 
+# ONS build intermediates (local_authorities.json is the committed output)
+services.json
+*_meta.json
+ew_lads.json
+en_rgn.json
+ 
