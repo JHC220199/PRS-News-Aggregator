@@ -245,6 +245,31 @@ def normalise(s: str) -> str:
     return (s or "").translate(_NORMALISE_MAP).lower()
  
  
+# Nation-level signals — used only when a story names no specific authority, to
+# separate Wales-wide and England-wide stories from genuinely UK-wide ones.
+WALES_SIGNALS = [
+    "wales", "welsh", "cymru", "rent smart wales", "renting homes",
+    "occupation contract", "senedd", "welsh government", "section 173",
+]
+ENGLAND_SIGNALS = [
+    "england", "english", "selective licensing", "additional licensing",
+    "article 4", "renters' rights act", "renters rights act",
+    "section 21", "section 8",
+]
+ 
+ 
+def nation_signal(text_lc: str):
+    """Return 'Wales', 'England', or None for an un-geotagged story.
+    A story signalling both nations (comparative) stays cross-cutting."""
+    w = any(t in text_lc for t in WALES_SIGNALS)
+    e = any(t in text_lc for t in ENGLAND_SIGNALS)
+    if w and not e:
+        return "Wales"
+    if e and not w:
+        return "England"
+    return None
+ 
+ 
 def score_relevance(text_lc: str):
     """Return (is_relevant, score). Score is for ranking only."""
     context_hits = {t for t in PRS_CONTEXT_TERMS if t in text_lc}
@@ -395,7 +420,10 @@ def process_entries(entries, fetch_method, geo_index, seen_guids,
             primary_la = las[0]["name"]
             all_las = [a["name"] for a in las]
         else:
-            nation, region = "National / cross-cutting", "National / cross-cutting"
+            if nation_signal(haystack) == "Wales":
+                nation, region = "Wales", "Wales (national)"
+            else:
+                nation, region = "National / cross-cutting", "National / cross-cutting"
             primary_la, all_las = "", []
  
         category, all_cats = categorise(haystack)
