@@ -7,11 +7,29 @@ node_modules/
 package-lock.json
 package.json
 render_test.mjs
+render_map.mjs
+render_digest.mjs
 dashboard_preview.png
+map_preview.png
+wales_sidebar.png
+wales_map.png
+digest_busy.png
+digest_quiet.png
  
-# ONS build intermediates (local_authorities.json is the committed output)
+# Digest runtime outputs (uploaded to SharePoint, not committed)
+digest.html
+digest.json
+digest_busy.html
+digest_quiet.html
+digest_quiet.json
+demo.db
+ 
+# ONS build intermediates (local_authorities.json and regions.geojson are the committed outputs)
 services.json
 *_meta.json
 ew_lads.json
 en_rgn.json
+regions_en.geojson
+wales_lad.geojson
+prod.db
  
