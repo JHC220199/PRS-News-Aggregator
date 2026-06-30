@@ -258,12 +258,10 @@ function renderMasthead(meta){
   const rows = state.rows;
   const newWk = rows.filter(r=>daysAgo(r.first_seen)<=7).length;
   const areas = new Set(rows.filter(r=>r.primary_la).map(r=>r.primary_la)).size;
-  const sel = rows.filter(r=>r.category==="Selective licensing").length;
   const stats = [
     {n:rows.length, l:"stories tracked", a:false},
     {n:newWk, l:"new in last 7 days", a:true},
     {n:areas, l:"local areas with coverage", a:false},
-    {n:sel, l:"selective licensing items", a:false},
   ];
   $("#stats").innerHTML = stats.map(s=>`<div class="stat"><div class="n${s.a?" accent":""}">${s.n.toLocaleString("en-GB")}</div><div class="l">${s.l}</div></div>`).join("");
 }
