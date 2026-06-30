@@ -32,6 +32,18 @@ jobs:
       - name: Run the monitor
         run: python prs_news_monitor.py
  
+      - name: Build and send the daily digest
+        env:
+          PRS_GRAPH_TENANT_ID:     ${{ secrets.PRS_GRAPH_TENANT_ID }}
+          PRS_GRAPH_CLIENT_ID:     ${{ secrets.PRS_GRAPH_CLIENT_ID }}
+          PRS_GRAPH_CLIENT_SECRET: ${{ secrets.PRS_GRAPH_CLIENT_SECRET }}
+          PRS_SP_HOST:             ${{ secrets.PRS_SP_HOST }}
+          PRS_SP_SITE_PATH:        ${{ secrets.PRS_SP_SITE_PATH }}
+          PRS_SP_LIBRARY:          ${{ secrets.PRS_SP_LIBRARY }}
+          PRS_SP_FOLDER:           ${{ secrets.PRS_SP_FOLDER }}
+          PRS_DASHBOARD_URL:       ${{ vars.PRS_DASHBOARD_URL }}
+        run: python build_digest.py
+ 
       - name: Commit the updated database
         run: |
           git config user.name  "prs-news-bot"
