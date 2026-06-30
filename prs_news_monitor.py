@@ -245,6 +245,20 @@ def normalise(s: str) -> str:
     return (s or "").translate(_NORMALISE_MAP).lower()
  
  
+def _signal_match(text_lc: str, terms) -> bool:
+    """Match any term, using word boundaries for plain-word terms so short
+    tokens like 'usa' don't match inside 'thousands' or 'crusade'. Terms with
+    non-word characters ('$', 'u.s.', 'buy-to-let', 'new york') match as
+    substrings, which is already safe."""
+    for t in terms:
+        if re.search(r"[^\w]", t):
+            if t in text_lc:
+                return True
+        elif re.search(r"\b" + re.escape(t) + r"\b", text_lc):
+            return True
+    return False
+ 
+ 
 # Nation-level signals — used only when a story names no specific authority, to
 # separate Wales-wide and England-wide stories from genuinely UK-wide ones.
 WALES_SIGNALS = [
@@ -261,13 +275,88 @@ ENGLAND_SIGNALS = [
 def nation_signal(text_lc: str):
     """Return 'Wales', 'England', or None for an un-geotagged story.
     A story signalling both nations (comparative) stays cross-cutting."""
-    w = any(t in text_lc for t in WALES_SIGNALS)
-    e = any(t in text_lc for t in ENGLAND_SIGNALS)
+    w = _signal_match(text_lc, WALES_SIGNALS)
+    e = _signal_match(text_lc, ENGLAND_SIGNALS)
     if w and not e:
         return "Wales"
     if e and not w:
         return "England"
     return None
+ 
+ 
+# Geographic scope guard — the tool covers England and Wales only. Generic
+# theme/feed queries occasionally surface US, Scottish or Irish stories (e.g. a
+# US "renter rights" piece). A story is dropped if it carries a clear
+# out-of-scope signal and no countervailing UK signal.
+FOREIGN_SIGNALS = [
+    # United States
+    "$", "us$", "u.s.", "usa", "united states", "america", "american",
+    "california", "texas", "florida", "illinois", "new york", "new jersey",
+    "massachusetts", "pennsylvania", "ohio", "michigan", "arizona", "colorado",
+    "north carolina", "minnesota", "oregon", "nevada", "chicago", "los angeles",
+    "san francisco", "houston", "philadelphia", "seattle", "las vegas", "miami",
+    "atlanta", "denver", "phoenix", "dallas", "baltimore", "detroit",
+    "brooklyn", "manhattan", "hud",
+    # Other UK nations / Ireland (out of scope for this tool)
+    "scotland", "scottish", "holyrood", "edinburgh", "glasgow", "aberdeen",
+    "dundee", "northern ireland", "stormont", "belfast",
+    "republic of ireland", "dublin",
+    # Other
+    "canada", "toronto", "vancouver", "australia", "sydney", "melbourne",
+    "new zealand", "auckland",
+]
+# Distinctively UK/England-&-Wales terms that rescue an otherwise ambiguous item
+# (these rarely appear in non-UK coverage).
+UK_SIGNALS = [
+    "uk", "u.k.", "united kingdom", "britain", "british", "england", "english",
+    "wales", "welsh", "cymru", "senedd", "westminster", "whitehall", "gov.uk",
+    "mhclg", "\u00a3", "rent smart wales", "renting homes", "selective licensing",
+    "additional licensing", "hmo", "house in multiple occupation", "section 21",
+    "section 173", "section 8", "renters' rights", "right to rent", "leasehold",
+    "rent repayment order", "banning order", "article 4", "epc", "awaab",
+    "rightmove", "zoopla", "london", "buy-to-let", "buy to let", "lettings",
+    "letting agent", "tenancy deposit", "council tax",
+]
+ 
+ 
+def in_scope(text_lc: str, has_authority: bool = False) -> bool:
+    """True unless the text clearly points outside England and Wales. A story
+    that maps to a real E&W authority is always in scope."""
+    if has_authority:
+        return True
+    if _signal_match(text_lc, FOREIGN_SIGNALS):
+        return _signal_match(text_lc, UK_SIGNALS)
+    return True
+ 
+ 
+# Out-of-jurisdiction filter. The tool covers England and Wales only, but broad
+# Google News theme queries occasionally return US ("renter rights"), Scottish,
+# or other coverage. Country-level signals are always disqualifying; state/city
+# signals only disqualify when the story hasn't anchored to an E&W authority
+# (so we don't wrongly drop, say, a story that genuinely names an English town).
+_FOREIGN_STRONG = re.compile(
+    r"\b(united states|u\.?s\.?a\.?|u\.s\.|americans?|scotland|scottish|holyrood|"
+    r"northern ireland|stormont|republic of ireland|australia|australian|"
+    r"new zealand|canada|canadian)\b")
+_FOREIGN_WEAK = re.compile(
+    r"\b(illinois|california|texas|florida|massachusetts|pennsylvania|ohio|"
+    r"michigan|minnesota|wisconsin|colorado|arizona|nevada|oregon|maryland|"
+    r"virginia|tennessee|missouri|louisiana|kentucky|alabama|oklahoma|"
+    r"connecticut|iowa|kansas|nebraska|utah|idaho|montana|wyoming|vermont|"
+    r"indiana|delaware|arkansas|mississippi|new jersey|new york|new mexico|"
+    r"north carolina|south carolina|north dakota|south dakota|west virginia|"
+    r"rhode island|hawaii|alaska|chicago|los angeles|san francisco|brooklyn|"
+    r"manhattan|seattle|denver|atlanta|dallas|houston|philadelphia|miami|"
+    r"minneapolis|detroit|phoenix|las vegas|new orleans|"
+    r"edinburgh|glasgow|aberdeen|dundee|belfast|dublin)\b")
+ 
+ 
+def out_of_scope(text_lc: str, has_authority: bool) -> bool:
+    if _FOREIGN_STRONG.search(text_lc):
+        return True
+    if not has_authority and _FOREIGN_WEAK.search(text_lc):
+        return True
+    return False
  
  
 def score_relevance(text_lc: str):
@@ -403,6 +492,15 @@ def process_entries(entries, fetch_method, geo_index, seen_guids,
             continue
  
         las = geotag(display_title + " " + summary, geo_index)
+ 
+        # Geographic scope: England and Wales only. Generic theme/feed queries
+        # occasionally surface US/Scottish/Irish stories. A story that maps to an
+        # actual E&W authority is in scope; otherwise drop it if it carries a
+        # clear foreign signal and no UK signal. The source name often gives the
+        # foreign story away (e.g. "Chicago Tribune"), so include it.
+        scope_text = normalise(display_title + " " + summary + " " + source)
+        if not in_scope(scope_text, bool(las)):
+            continue
  
         # Curated feeds are national trade/gov sources. If an item doesn't map
         # to a specific authority, only keep it when it carries a high-signal
