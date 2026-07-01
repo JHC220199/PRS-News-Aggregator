@@ -92,6 +92,14 @@ CURATED_FEEDS = [
     ("Nation.Cymru", "https://nation.cymru/feed/"),
 ]
  
+# Sources whose entire output is PRS-relevant by definition (single-purpose
+# regulators, not broad trade blogs) — exempted from the high-signal-only bar
+# applied to other national feed items with no specific authority.
+SINGLE_PURPOSE_PRS_SOURCES = {"Rent Smart Wales"}
+# Sources that are inherently Welsh regardless of whether a story's own text
+# happens to say "Wales" — used to tag un-geotagged items from that source.
+WALES_ONLY_SOURCES = {"Rent Smart Wales"}
+ 
 # --- Relevance filter -------------------------------------------------------
 # Context terms confirm a story is actually about the PRS (guards against
 # alcohol/taxi/premises licensing and unrelated planning appeals).
@@ -177,6 +185,49 @@ def fetch_feed(url: str):
  
 def polite_pause():
     time.sleep(random.uniform(GNEWS_MIN_DELAY, GNEWS_MAX_DELAY))
+ 
+ 
+class _FakeEntry(dict):
+    """Minimal feedparser-entry-alike so scraped sources can flow through the
+    same process_entries() pipeline as real feeds."""
+    def get(self, key, default=None):
+        return dict.get(self, key, default)
+ 
+ 
+_RSW_ARTICLE_RE = re.compile(
+    r'<h[23] class="article-item-title">\s*<a[^>]*href="(?P<href>/en/news/\d+/[^"]+)"'
+    r'[^>]*>(?P<title>[^<]+)</a></h[23]>\s*'
+    r'<span class="article-time">\s*(?P<date>\d{1,2} \w+ \d{4})</span>',
+    re.S)
+ 
+ 
+def fetch_rent_smart_wales_news():
+    """Rent Smart Wales publishes PRS news but exposes no RSS/Atom feed, so this
+    scrapes the news listing page directly and returns feedparser-alike entries.
+    If the site's markup changes this degrades to zero entries rather than
+    erroring the whole run (caught by the caller like any other feed failure)."""
+    url = "https://rentsmart.gov.wales/en/news/"
+    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+    raw = urllib.request.urlopen(req, timeout=REQUEST_TIMEOUT).read().decode(
+        "utf-8", "ignore")
+    entries = []
+    for m in _RSW_ARTICLE_RE.finditer(raw):
+        title = html.unescape(m.group("title")).strip()
+        href = "https://rentsmart.gov.wales" + m.group("href")
+        try:
+            dt = datetime.strptime(m.group("date"), "%d %b %Y")
+        except ValueError:
+            continue
+        entries.append(_FakeEntry(
+            title=title, link=href,
+            published_parsed=dt.replace(tzinfo=timezone.utc).timetuple(),
+            summary="", id=href))
+ 
+    class _FakeFeed:
+        pass
+    feed = _FakeFeed()
+    feed.entries = entries
+    return feed
  
  
 # --------------------------------------------------------------------------- #
@@ -505,8 +556,10 @@ def process_entries(entries, fetch_method, geo_index, seen_guids,
         # Curated feeds are national trade/gov sources. If an item doesn't map
         # to a specific authority, only keep it when it carries a high-signal
         # term, so genuine national developments come through but routine
-        # national blog chatter doesn't swamp the local stories.
-        if fetch_method == "feed" and not las:
+        # national blog chatter doesn't swamp the local stories. Exempt
+        # single-purpose PRS regulators (their whole output is on-topic, unlike
+        # a broad trade blog) — the base relevance filter above already applies.
+        if fetch_method == "feed" and not las and source not in SINGLE_PURPOSE_PRS_SOURCES:
             if not any(t in haystack for t in PRS_HIGH_SIGNAL_TERMS):
                 continue
  
@@ -518,7 +571,7 @@ def process_entries(entries, fetch_method, geo_index, seen_guids,
             primary_la = las[0]["name"]
             all_las = [a["name"] for a in las]
         else:
-            if nation_signal(haystack) == "Wales":
+            if nation_signal(haystack) == "Wales" or source in WALES_ONLY_SOURCES:
                 nation, region = "Wales", "Wales (national)"
             else:
                 nation, region = "National / cross-cutting", "National / cross-cutting"
@@ -557,6 +610,24 @@ def prune(con):
     cur = con.execute("DELETE FROM articles WHERE published < ?", (cutoff,))
     con.commit()
     return cur.rowcount
+ 
+ 
+def purge_out_of_scope(con):
+    """Retroactively remove rows that predate the geographic scope guard (e.g.
+    US stories that slipped in before in_scope() existed). Only un-geotagged
+    rows are re-checked — anything mapped to a real E&W authority is always
+    kept, same rule as at ingest time. Cheap enough to run every day."""
+    rows = con.execute(
+        "SELECT id,title,summary,source FROM articles WHERE primary_la=''"
+    ).fetchall()
+    bad_ids = [
+        rid for rid, t, s, src in rows
+        if not in_scope(normalise(f"{t or ''} {s or ''} {src or ''}"), False)
+    ]
+    if bad_ids:
+        con.executemany("DELETE FROM articles WHERE id=?", [(i,) for i in bad_ids])
+        con.commit()
+    return len(bad_ids)
  
  
 def main():
@@ -604,7 +675,7 @@ def main():
         polite_pause()
  
     # 3. Curated feeds ---------------------------------------------------------
-    print(f"\n[3/3] Curated feeds ({len(CURATED_FEEDS)})")
+    print(f"\n[3/3] Curated feeds ({len(CURATED_FEEDS)} feeds + Rent Smart Wales)")
     for name, url in CURATED_FEEDS:
         d = fetch_feed(url)
         if d:
@@ -613,9 +684,23 @@ def main():
             all_new += new
             print(f"      • {name:<40} +{len(new)}")
  
+    # Rent Smart Wales has no public RSS feed, so its news page is scraped
+    # directly (see fetch_rent_smart_wales_news). Wrapped defensively so a
+    # markup change on their site degrades to zero items, not a failed run.
+    try:
+        d = fetch_rent_smart_wales_news()
+        new = process_entries(d.entries, "feed", geo_index, seen_guids,
+                              recent_titles, batch_titles,
+                              default_source="Rent Smart Wales")
+        all_new += new
+        print(f"      • {'Rent Smart Wales (scraped)':<40} +{len(new)}")
+    except Exception as exc:  # noqa: BLE001
+        print(f"      ! Rent Smart Wales scrape failed ({exc})")
+ 
     # Persist ------------------------------------------------------------------
     insert_rows(con, all_new)
     pruned = prune(con)
+    purged = purge_out_of_scope(con)
     total = con.execute("SELECT COUNT(*) FROM articles").fetchone()[0]
     con.execute("INSERT OR REPLACE INTO meta VALUES ('last_run', ?)",
                 (datetime.now(timezone.utc).isoformat(timespec="seconds"),))
@@ -625,7 +710,8 @@ def main():
     con.close()
  
     print(f"\n== Done. Added {len(all_new)} | pruned {pruned} | "
-          f"DB total {total} | geo failures {failures} ==")
+          f"out-of-scope purged {purged} | DB total {total} | "
+          f"geo failures {failures} ==")
  
  
 if __name__ == "__main__":
