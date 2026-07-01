@@ -2,7 +2,7 @@
 """
 NRLA PRS news — daily email digest generator
 =============================================
-Reads the same prs_news.db the dashboard uses, selects the stories first seen
+Reads the same prs_news.db thhe dashboard uses, selects the stories first seen
 since the last digest, ranks them editorially, and renders an Outlook-safe HTML
 email. Optionally uploads the HTML (and a small JSON sidecar with the subject /
 preheader) to SharePoint via the Microsoft Graph API, where a Power Automate
@@ -440,7 +440,7 @@ def graph_upload(token, site_id, drive_id, name, content_bytes, content_type):
 def upload_to_sharepoint(html_text, meta_obj) -> bool:
     token = graph_token()
     site = graph_get(
-        f"https://graph.microsoft.com/v1.0/sites/{SP_HOST}:{SP_SITE_PATH}", token)
+        f"https://graph.microsoft.com/v1.0/sites/{SP_HOST}:{urllib.parse.quote(SP_SITE_PATH, safe='/')}", token)
     site_id = site["id"]
     drives = graph_get(
         f"https://graph.microsoft.com/v1.0/sites/{site_id}/drives", token)["value"]
