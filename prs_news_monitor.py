@@ -286,14 +286,16 @@ def tidy_summary(summary: str, title: str, source: str) -> str:
  
 _NORMALISE_MAP = str.maketrans({
     "\u2019": "'", "\u2018": "'", "\u201c": '"', "\u201d": '"',
-    "\u2013": "-", "\u2014": "-",
+    "\u2013": "-", "\u2014": "-", "&": " and ",
 })
  
  
 def normalise(s: str) -> str:
-    """Lowercase and flatten curly quotes/dashes so keyword matching is reliable
-    (e.g. 'Renters' Rights' with a typographic apostrophe still matches)."""
-    return (s or "").translate(_NORMALISE_MAP).lower()
+    """Lowercase, flatten curly quotes/dashes and expand '&' to 'and' so keyword
+    and place-name matching is reliable (e.g. 'Renters' Rights' with a
+    typographic apostrophe, or 'Brighton & Hove' vs 'Brighton and Hove')."""
+    s = (s or "").translate(_NORMALISE_MAP).lower()
+    return re.sub(r"\s+", " ", s)
  
  
 def _signal_match(text_lc: str, terms) -> bool:
@@ -544,6 +546,15 @@ def process_entries(entries, fetch_method, geo_index, seen_guids,
  
         las = geotag(display_title + " " + summary, geo_index)
  
+        # Council newsrooms often omit the place name from headlines (e.g.
+        # "Selective licensing scheme expanded after positive impact" from
+        # Brighton & Hove City Council). When the text itself yields no match
+        # and the source is clearly a council, geotag from the source name.
+        # Restricted to councils because they only publish about their own
+        # area — a regional newspaper name must NOT geotag its stories.
+        if not las and source and "council" in normalise(source):
+            las = geotag(source, geo_index)
+ 
         # Geographic scope: England and Wales only. Generic theme/feed queries
         # occasionally surface US/Scottish/Irish stories. A story that maps to an
         # actual E&W authority is in scope; otherwise drop it if it carries a
@@ -630,6 +641,29 @@ def purge_out_of_scope(con):
     return len(bad_ids)
  
  
+def retag_from_council_source(con, geo_index):
+    """Retroactively geotag rows stored before the council-source fallback
+    existed: un-geotagged rows whose source is a council get mapped to that
+    council's authority (councils only publish about their own area)."""
+    rows = con.execute(
+        "SELECT id,source FROM articles WHERE primary_la='' AND source LIKE '%ouncil%'"
+    ).fetchall()
+    n = 0
+    for rid, src in rows:
+        las = geotag(src or "", geo_index)
+        if las:
+            a = las[0]
+            con.execute(
+                """UPDATE articles SET nation=?, region=?, primary_la=?, all_las=?
+                   WHERE id=?""",
+                (a["nation"], a["region"], a["name"],
+                 json.dumps([x["name"] for x in las]), rid))
+            n += 1
+    if n:
+        con.commit()
+    return n
+ 
+ 
 def main():
     spine = json.load(open(AUTHORITIES_PATH, encoding="utf-8"))
     authorities = spine["authorities"]
@@ -701,6 +735,7 @@ def main():
     insert_rows(con, all_new)
     pruned = prune(con)
     purged = purge_out_of_scope(con)
+    retagged = retag_from_council_source(con, geo_index)
     total = con.execute("SELECT COUNT(*) FROM articles").fetchone()[0]
     con.execute("INSERT OR REPLACE INTO meta VALUES ('last_run', ?)",
                 (datetime.now(timezone.utc).isoformat(timespec="seconds"),))
@@ -710,8 +745,8 @@ def main():
     con.close()
  
     print(f"\n== Done. Added {len(all_new)} | pruned {pruned} | "
-          f"out-of-scope purged {purged} | DB total {total} | "
-          f"geo failures {failures} ==")
+          f"out-of-scope purged {purged} | council-retagged {retagged} | "
+          f"DB total {total} | geo failures {failures} ==")
  
  
 if __name__ == "__main__":
