@@ -456,6 +456,103 @@ def geotag(text, geo_index):
     return matched
  
  
+# --- Source-based geotag fallbacks ------------------------------------------
+# Local outlets whose coverage is overwhelmingly about one home patch. Used
+# ONLY as a last resort (no place in the story text) and ONLY when the story
+# carries no national-scope signal. Keys are matched case-insensitively
+# against the source name; values are canonical spine authority names.
+# Extend freely as you spot more outlets.
+OUTLET_HOME_PATCH = {
+    "the argus": "Brighton and Hove",
+    "brighton and hove news": "Brighton and Hove",
+    "manchester evening news": "Manchester",
+    "liverpool echo": "Liverpool",
+    "birminghamlive": "Birmingham",
+    "birmingham mail": "Birmingham",
+    "chronicle live": "Newcastle upon Tyne",
+    "chroniclelive": "Newcastle upon Tyne",
+    "yorkshire evening post": "Leeds",
+    "leeds live": "Leeds",
+    "bristol post": "Bristol",
+    "bristollive": "Bristol",
+    "bristol live": "Bristol",
+    "leicester mercury": "Leicester",
+    "leicestershirelive": "Leicester",
+    "nottingham post": "Nottingham",
+    "nottinghamshirelive": "Nottingham",
+    "hull live": "Kingston upon Hull",
+    "hull daily mail": "Kingston upon Hull",
+    "the northern echo": "County Durham",
+    "oxford mail": "Oxford",
+    "cambridge news": "Cambridge",
+    "portsmouth news": "Portsmouth",
+    "the news, portsmouth": "Portsmouth",
+    "southern daily echo": "Southampton",
+    "daily echo": "Southampton",
+    "express and star": "Wolverhampton",
+    "coventry telegraph": "Coventry",
+    "coventrylive": "Coventry",
+    "stokeontrentlive": "Stoke-on-Trent",
+    "stoke sentinel": "Stoke-on-Trent",
+    "the star, sheffield": "Sheffield",
+    "sheffield star": "Sheffield",
+    "teesside live": "Middlesbrough",
+    "gazette live": "Middlesbrough",
+    "lancashire telegraph": "Blackburn with Darwen",
+    "the bolton news": "Bolton",
+    "bolton news": "Bolton",
+    "wigan today": "Wigan",
+    "reading chronicle": "Reading",
+    "swindon advertiser": "Swindon",
+    "derby telegraph": "Derby",
+    "derbyshire live": "Derby",
+    "plymouth herald": "Plymouth",
+    "plymouth live": "Plymouth",
+    "norwich evening news": "Norwich",
+    "ipswich star": "Ipswich",
+    "south wales argus": "Newport",
+    "south wales evening post": "Swansea",
+    "wrexham leader": "Wrexham",
+    "the leader, wrexham": "Wrexham",
+    # Opaque council domains that don't contain the word "council" or a
+    # matchable place name:
+    "rbkc.gov.uk": "Kensington and Chelsea",
+    "lbhf.gov.uk": "Hammersmith and Fulham",
+}
+ 
+# If a story carries any of these, it is plausibly national in scope, so the
+# outlet fallback must NOT localise it (a local paper covering a national
+# story keeps its national tag).
+NATIONAL_STORY_SIGNALS = [
+    "government", "minister", "ministers", "mps", "westminster", "whitehall",
+    "chancellor", "prime minister", "downing street", "mhclg", "hmrc", "dwp",
+    "ombudsman", "white paper", "consultation launched nationally", "bill",
+    "royal assent", "national", "nationwide", "across england", "across wales",
+    "across the country", "uk-wide", "england-wide",
+]
+ 
+ 
+def fallback_geotag(source, haystack, geo_index):
+    """Geotag from the source when the story text names no place.
+    Tier 1 — council sources (contain 'council' or end .gov.uk): councils only
+    publish about their own area, so always safe.
+    Tier 2 — known local outlets (OUTLET_HOME_PATCH): applied only when the
+    story carries no national-scope signal."""
+    if not source:
+        return []
+    src_lc = normalise(source)
+    if "council" in src_lc or src_lc.strip().endswith(".gov.uk"):
+        las = geotag(source, geo_index)
+        if las:
+            return las
+        home = OUTLET_HOME_PATCH.get(src_lc.strip())
+        return geotag(home, geo_index) if home else []
+    home = OUTLET_HOME_PATCH.get(src_lc.strip())
+    if home and not _signal_match(haystack, NATIONAL_STORY_SIGNALS):
+        return geotag(home, geo_index)
+    return []
+ 
+ 
 # --------------------------------------------------------------------------- #
 # DATABASE                                                                     #
 # --------------------------------------------------------------------------- #
@@ -546,14 +643,13 @@ def process_entries(entries, fetch_method, geo_index, seen_guids,
  
         las = geotag(display_title + " " + summary, geo_index)
  
-        # Council newsrooms often omit the place name from headlines (e.g.
-        # "Selective licensing scheme expanded after positive impact" from
-        # Brighton & Hove City Council). When the text itself yields no match
-        # and the source is clearly a council, geotag from the source name.
-        # Restricted to councils because they only publish about their own
-        # area — a regional newspaper name must NOT geotag its stories.
-        if not las and source and "council" in normalise(source):
-            las = geotag(source, geo_index)
+        # Council newsrooms and local outlets often omit the place name from
+        # headlines ("Council expands rental licensing scheme" — The Argus).
+        # When the text yields no match, fall back to the source: councils
+        # always map to their own area; known local outlets map to their home
+        # patch only if the story carries no national-scope signal.
+        if not las:
+            las = fallback_geotag(source, haystack, geo_index)
  
         # Geographic scope: England and Wales only. Generic theme/feed queries
         # occasionally surface US/Scottish/Irish stories. A story that maps to an
@@ -642,15 +738,17 @@ def purge_out_of_scope(con):
  
  
 def retag_from_council_source(con, geo_index):
-    """Retroactively geotag rows stored before the council-source fallback
-    existed: un-geotagged rows whose source is a council get mapped to that
-    council's authority (councils only publish about their own area)."""
+    """Retroactively geotag rows stored before the source fallbacks existed:
+    every un-geotagged row is re-run through fallback_geotag (council sources,
+    .gov.uk domains, known local outlets with the national-signal guard) so
+    e.g. an Argus licensing story stored as National moves to Brighton."""
     rows = con.execute(
-        "SELECT id,source FROM articles WHERE primary_la='' AND source LIKE '%ouncil%'"
+        "SELECT id,title,summary,source FROM articles WHERE primary_la=''"
     ).fetchall()
     n = 0
-    for rid, src in rows:
-        las = geotag(src or "", geo_index)
+    for rid, t, s, src in rows:
+        haystack = normalise(f"{t or ''} {s or ''}")
+        las = fallback_geotag(src or "", haystack, geo_index)
         if las:
             a = las[0]
             con.execute(
