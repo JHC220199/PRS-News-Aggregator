@@ -2,12 +2,12 @@
 """
 NRLA PRS news — daily email digest generator
 =============================================
-Reads the same prs_news.db thhe dashboard uses, selects the stories first seen
+Reads the same prs_news.db the dashboard uses, selects the stories first seen
 since the last digest, ranks them editorially, and renders an Outlook-safe HTML
 email. Optionally uploads the HTML (and a small JSON sidecar with the subject /
 preheader) to SharePoint via the Microsoft Graph API, where a Power Automate
 flow can pick it up and send it.
-
+ 
 Design notes
 ------------
 * Push surface, not a database mirror: the job is to make the 2-3 stories that
@@ -20,13 +20,13 @@ Design notes
   no email at all.
 * Bulletproof HTML: 600px role=presentation tables, all CSS inline, web-safe
   fonts, no layout-critical images, explicit light backgrounds.
-
+ 
 Delivery is intentionally decoupled: this script only renders + uploads a file.
 Sending (recipients, subject, etc.) is handled by the Power Automate flow.
-
+ 
 No third-party dependencies — standard library only (urllib for Graph).
 """
-
+ 
 import os
 import re
 import json
@@ -35,29 +35,29 @@ import sqlite3
 import urllib.parse
 import urllib.request
 from datetime import datetime, timezone, date, timedelta
-
+ 
 # --------------------------------------------------------------------------- #
 # CONFIG                                                                       #
 # --------------------------------------------------------------------------- #
-
+ 
 DB_PATH        = os.environ.get("PRS_DB_PATH", "prs_news.db")
 OUTPUT_HTML    = os.environ.get("PRS_DIGEST_HTML", "digest.html")
 OUTPUT_META    = os.environ.get("PRS_DIGEST_META", "digest.json")
 DASHBOARD_URL  = os.environ.get("PRS_DASHBOARD_URL",
                                 "https://jhc220199.github.io/PRS-News-Aggregator/")
-
+ 
 # Layout / selection tuning
 SIMPLE_LAYOUT_MAX = int(os.environ.get("PRS_DIGEST_SIMPLE_MAX", "5"))
 TOP_STORIES       = int(os.environ.get("PRS_DIGEST_TOP", "5"))
 PER_REGION_CAP    = int(os.environ.get("PRS_DIGEST_REGION_CAP", "4"))
 WALES_CAP         = int(os.environ.get("PRS_DIGEST_WALES_CAP", "6"))
 NATIONAL_CAP      = int(os.environ.get("PRS_DIGEST_NATIONAL_CAP", "4"))
-
+ 
 # Test/preview only: cap the number of selected stories (0 = off).
 DEMO_LIMIT     = int(os.environ.get("PRS_DIGEST_DEMO_LIMIT", "0"))
 # When set, build the file but never upload or advance the marker.
 DRY_RUN        = os.environ.get("PRS_DIGEST_DRY_RUN", "0") == "1"
-
+ 
 # SharePoint / Graph (set as GitHub secrets). Upload is skipped if any missing.
 GRAPH_TENANT   = os.environ.get("PRS_GRAPH_TENANT_ID", "")
 GRAPH_CLIENT   = os.environ.get("PRS_GRAPH_CLIENT_ID", "")
@@ -66,13 +66,13 @@ SP_HOST        = os.environ.get("PRS_SP_HOST", "rlateam.sharepoint.com")
 SP_SITE_PATH   = os.environ.get("PRS_SP_SITE_PATH", "")          # e.g. /sites/Policy
 SP_LIBRARY     = os.environ.get("PRS_SP_LIBRARY", "Campaigns & Policy")
 SP_FOLDER      = os.environ.get("PRS_SP_FOLDER", "PRS-news-digest")
-
+ 
 # --- NRLA palette ----------------------------------------------------------
 BLUE, ORANGE, INK = "#113B54", "#E96C19", "#0F2636"
 MUTED, LINE = "#5C6B75", "#E2E6E9"
 PAGE_BG, CARD, BLUE_TINT = "#F2F4F5", "#FFFFFF", "#E7EEF2"
 FONT = "Arial, Helvetica, sans-serif"
-
+ 
 # --- Editorial ranking -----------------------------------------------------
 CATEGORY_WEIGHT = {
     "Selective licensing": 10,
@@ -92,42 +92,42 @@ TIME_SENSITIVE_CATS = {
     "Selective licensing", "HMO / additional licensing", "Article 4 / planning",
     "Rent Smart Wales", "Enforcement & penalties", "Landlord licensing (other)",
 }
-
+ 
 ENGLISH_REGIONS = ["North East", "North West", "Yorkshire and The Humber",
                    "East Midlands", "West Midlands", "East of England",
                    "London", "South East", "South West"]
 WELSH_REGIONS = ["North Wales", "Mid Wales", "South West Wales",
                  "South East Wales", "Wales (national)"]
-
+ 
 MONTHS = ["January", "February", "March", "April", "May", "June", "July",
           "August", "September", "October", "November", "December"]
-
-
+ 
+ 
 # --------------------------------------------------------------------------- #
 # HELPERS                                                                      #
 # --------------------------------------------------------------------------- #
-
+ 
 def ordinal(n: int) -> str:
     suf = "th" if 10 <= n % 100 <= 20 else {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
     return f"{n}{suf}"
-
-
+ 
+ 
 def fmt_date(iso: str) -> str:
     try:
         d = date.fromisoformat(iso)
         return f"{ordinal(d.day)} {MONTHS[d.month - 1]} {d.year}"
     except Exception:
         return iso or ""
-
-
+ 
+ 
 def esc(s: str) -> str:
     return html.escape(s or "", quote=True)
-
-
+ 
+ 
 def is_consultation(r) -> bool:
     return "consultation" in (r["title"] + " " + (r["summary"] or "")).lower()
-
-
+ 
+ 
 def editorial_score(r) -> float:
     s = CATEGORY_WEIGHT.get(r["category"], 2)
     if r["primary_la"]:
@@ -142,12 +142,12 @@ def editorial_score(r) -> float:
     except Exception:
         pass
     return s
-
-
+ 
+ 
 def time_sensitive(r) -> bool:
     return r["category"] in TIME_SENSITIVE_CATS or is_consultation(r)
-
-
+ 
+ 
 def loc_label(r) -> str:
     if r["primary_la"]:
         return r["primary_la"]
@@ -157,8 +157,8 @@ def loc_label(r) -> str:
     if reg == "Wales (national)":
         return "Wales-wide"
     return reg
-
-
+ 
+ 
 def meta_line(r) -> str:
     bits = []
     if r["primary_la"]:
@@ -172,36 +172,53 @@ def meta_line(r) -> str:
     if r["published"]:
         bits.append(esc(fmt_date(r["published"])))
     return " &middot; ".join(bits)
-
-
+ 
+ 
 # --------------------------------------------------------------------------- #
 # SELECTION                                                                    #
 # --------------------------------------------------------------------------- #
-
+ 
+def ensure_emailed_column(con):
+    """Add the per-story 'emailed' flag if this database predates it. Rows
+    already covered by the old date marker are marked as sent so the upgrade
+    doesn't re-email the whole 30-day window once."""
+    cols = [r[1] for r in con.execute("PRAGMA table_info(articles)")]
+    if "emailed" not in cols:
+        con.execute("ALTER TABLE articles ADD COLUMN emailed INTEGER DEFAULT 0")
+        row = con.execute(
+            "SELECT value FROM meta WHERE key='last_emailed'").fetchone()
+        if row:
+            con.execute("UPDATE articles SET emailed=1 WHERE first_seen <= ?",
+                        (row[0],))
+        con.commit()
+ 
+ 
 def select_new(con):
-    """Stories first seen since the last digest, newest editorial-rank first."""
-    row = con.execute("SELECT value FROM meta WHERE key='last_emailed'").fetchone()
-    last = row[0] if row else (date.today() - timedelta(days=1)).isoformat()
+    """Stories not yet included in any digest, editorial-rank first. Selection
+    is a per-story flag rather than a date marker so any cadence works —
+    including two runs on the same day (a date marker would make the afternoon
+    digest always empty, since first_seen is only date-granular)."""
+    ensure_emailed_column(con)
     cur = con.execute(
-        """SELECT title,url,source,published,first_seen,summary,nation,region,
-                  primary_la,category,score
-           FROM articles WHERE first_seen > ? ORDER BY published DESC""", (last,))
+        """SELECT guid,title,url,source,published,first_seen,summary,nation,
+                  region,primary_la,category,score
+           FROM articles WHERE emailed=0 ORDER BY published DESC""")
     cols = [c[0] for c in cur.description]
     rows = [dict(zip(cols, v)) for v in cur.fetchall()]
     rows.sort(key=editorial_score, reverse=True)
     if DEMO_LIMIT:
         rows = rows[:DEMO_LIMIT]
-    return rows, last
-
-
+    return rows
+ 
+ 
 # --------------------------------------------------------------------------- #
 # HTML BUILDING (Outlook-safe: tables, inline CSS, web-safe fonts)             #
 # --------------------------------------------------------------------------- #
-
+ 
 def region_link(region):
     return DASHBOARD_URL + "#r=" + urllib.parse.quote(region)
-
-
+ 
+ 
 def story_block(r, lead=False):
     """One story as a bulletproof two-column table (orange accent + content)."""
     tag = esc(r["category"])
@@ -228,27 +245,27 @@ def story_block(r, lead=False):
         '<td width="4" bgcolor="%s" style="background:%s;font-size:0;line-height:0;">&nbsp;</td>'
         '<td style="background:%s;border:1px solid %s;border-left:0;padding:13px 15px;">%s</td>'
         '</tr></table>' % (accent, accent, CARD, LINE, content))
-
-
+ 
+ 
 def section_header(label, count):
     return ('<tr><td style="padding:20px 0 8px 0;">'
             '<span style="font-size:13px;font-weight:bold;text-transform:uppercase;'
             'letter-spacing:.06em;color:%s;">%s</span>'
             '<span style="color:%s;font-size:13px;font-weight:normal;"> &nbsp;(%d)</span>'
             '</td></tr>' % (BLUE, esc(label), MUTED, count))
-
-
+ 
+ 
 def more_link(region, n):
     return ('<tr><td style="padding:2px 0 4px 0;">'
             '<a href="%s" style="color:%s;font-size:12px;font-weight:bold;'
             'text-decoration:none;">+ %d more &middot; view all &rarr;</a>'
             '</td></tr>' % (region_link(region), ORANGE, n))
-
-
+ 
+ 
 def rows_to_cells(rows, lead=False):
     return "".join('<tr><td>%s</td></tr>' % story_block(r, lead) for r in rows)
-
-
+ 
+ 
 def build_summary(rows):
     areas = len({r["primary_la"] for r in rows if r["primary_la"]})
     eng = sum(1 for r in rows if r["nation"] == "England")
@@ -269,8 +286,8 @@ def build_summary(rows):
         '<span style="color:%s;font-weight:bold;">%s</span><br>%s<br>'
         '<span style="color:%s;">%s</span></td></tr>'
         % (INK, INK, line1, " &middot; ".join(nation_bits), MUTED, cat_bits))
-
-
+ 
+ 
 def build_body(rows):
     """Return inner HTML rows for the digest, branching on volume."""
     if len(rows) <= SIMPLE_LAYOUT_MAX:
@@ -278,17 +295,17 @@ def build_body(rows):
         return ('<tr><td style="padding:14px 0 2px 0;font-size:13px;font-weight:bold;'
                 'text-transform:uppercase;letter-spacing:.06em;color:%s;">'
                 'Today\'s stories</td></tr>%s' % (BLUE, rows_to_cells(rows)))
-
+ 
     out = []
     top = rows[:TOP_STORIES]
     top_urls = {r["url"] for r in top}
     rest = [r for r in rows if r["url"] not in top_urls]
-
+ 
     out.append('<tr><td style="padding:18px 0 8px 0;"><span style="font-size:14px;'
                'font-weight:bold;text-transform:uppercase;letter-spacing:.06em;'
                'color:%s;">Top stories</span></td></tr>' % ORANGE)
     out.append(rows_to_cells(top, lead=True))
-
+ 
     # Wales block (its own section, given how central it is)
     wales = [r for r in rest if r["region"] in WELSH_REGIONS]
     if wales:
@@ -296,7 +313,7 @@ def build_body(rows):
         out.append(rows_to_cells(wales[:WALES_CAP]))
         if len(wales) > WALES_CAP:
             out.append(more_link("Wales (national)", len(wales) - WALES_CAP))
-
+ 
     # England, grouped by region
     eng_rest = [r for r in rest if r["region"] in ENGLISH_REGIONS]
     if eng_rest:
@@ -313,7 +330,7 @@ def build_body(rows):
             out.append(rows_to_cells(grp[:PER_REGION_CAP]))
             if len(grp) > PER_REGION_CAP:
                 out.append(more_link(reg, len(grp) - PER_REGION_CAP))
-
+ 
     # National / cross-cutting
     nat = [r for r in rest if r["region"] not in WELSH_REGIONS
            and r["region"] not in ENGLISH_REGIONS]
@@ -322,10 +339,10 @@ def build_body(rows):
         out.append(rows_to_cells(nat[:NATIONAL_CAP]))
         if len(nat) > NATIONAL_CAP:
             out.append(more_link("National / cross-cutting", len(nat) - NATIONAL_CAP))
-
+ 
     return "".join(out)
-
-
+ 
+ 
 def make_subject_preheader(rows):
     n = len(rows)
     schemes = sum(1 for r in rows if r["category"] in
@@ -338,7 +355,7 @@ def make_subject_preheader(rows):
     elif enf >= 1:
         extra = f", incl. {enf} enforcement {'action' if enf==1 else 'actions'}"
     subject = f"PRS news \u00b7 {n} new {'story' if n==1 else 'stories'}{extra}"
-
+ 
     # Preheader: the essence of the top few stories.
     pre_bits = []
     for r in rows[:3]:
@@ -346,8 +363,8 @@ def make_subject_preheader(rows):
         pre_bits.append(f"{loc}: {r['category']}" if r["primary_la"] else r["category"])
     preheader = "; ".join(pre_bits)
     return subject, preheader
-
-
+ 
+ 
 def render_email(rows, subject, preheader):
     today = date.today()
     datestr = f"{ordinal(today.day)} {MONTHS[today.month-1]} {today.year}"
@@ -366,7 +383,7 @@ def render_email(rows, subject, preheader):
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" bgcolor="{PAGE_BG}" style="background:{PAGE_BG};">
 <tr><td align="center" style="padding:18px 12px;">
   <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="width:600px;max-width:600px;font-family:{FONT};">
-
+ 
     <!-- Masthead -->
     <tr><td bgcolor="{BLUE}" style="background:{BLUE};padding:18px 20px;border-radius:8px 8px 0 0;">
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -378,7 +395,7 @@ def render_email(rows, subject, preheader):
         </tr>
       </table>
     </td></tr>
-
+ 
     <!-- Body -->
     <tr><td bgcolor="{CARD}" style="background:{CARD};padding:6px 20px 20px 20px;border:1px solid {LINE};border-top:0;border-radius:0 0 8px 8px;">
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -386,29 +403,29 @@ def render_email(rows, subject, preheader):
         {body}
       </table>
     </td></tr>
-
+ 
     <!-- Footer -->
     <tr><td style="padding:16px 20px;font-family:{FONT};font-size:11px;color:{MUTED};line-height:1.6;">
       Auto-generated from the PRS local news monitor &mdash; always verify against the
       original source before publishing.<br>
       <a href="{DASHBOARD_URL}" style="color:{BLUE};font-weight:bold;text-decoration:none;">Open the full dashboard &rarr;</a>
     </td></tr>
-
+ 
   </table>
 </td></tr>
 </table>
 </body>
 </html>"""
-
-
+ 
+ 
 # --------------------------------------------------------------------------- #
 # GRAPH / SHAREPOINT UPLOAD                                                     #
 # --------------------------------------------------------------------------- #
-
+ 
 def graph_configured() -> bool:
     return all([GRAPH_TENANT, GRAPH_CLIENT, GRAPH_SECRET, SP_SITE_PATH])
-
-
+ 
+ 
 def graph_token() -> str:
     data = urllib.parse.urlencode({
         "client_id": GRAPH_CLIENT, "client_secret": GRAPH_SECRET,
@@ -418,14 +435,14 @@ def graph_token() -> str:
     url = f"https://login.microsoftonline.com/{GRAPH_TENANT}/oauth2/v2.0/token"
     with urllib.request.urlopen(urllib.request.Request(url, data=data), timeout=30) as resp:
         return json.load(resp)["access_token"]
-
-
+ 
+ 
 def graph_get(url, token):
     req = urllib.request.Request(url, headers={"Authorization": "Bearer " + token})
     with urllib.request.urlopen(req, timeout=30) as resp:
         return json.load(resp)
-
-
+ 
+ 
 def graph_upload(token, site_id, drive_id, name, content_bytes, content_type):
     path = urllib.parse.quote(f"{SP_FOLDER}/{name}")
     url = (f"https://graph.microsoft.com/v1.0/sites/{site_id}/drives/{drive_id}"
@@ -435,12 +452,12 @@ def graph_upload(token, site_id, drive_id, name, content_bytes, content_type):
                                           "Content-Type": content_type})
     with urllib.request.urlopen(req, timeout=60) as resp:
         return json.load(resp).get("webUrl", "(uploaded)")
-
-
+ 
+ 
 def upload_to_sharepoint(html_text, meta_obj) -> bool:
     token = graph_token()
     site = graph_get(
-        f"https://graph.microsoft.com/v1.0/sites/{SP_HOST}:{urllib.parse.quote(SP_SITE_PATH, safe='/')}", token)
+        f"https://graph.microsoft.com/v1.0/sites/{SP_HOST}:{SP_SITE_PATH}", token)
     site_id = site["id"]
     drives = graph_get(
         f"https://graph.microsoft.com/v1.0/sites/{site_id}/drives", token)["value"]
@@ -452,31 +469,33 @@ def upload_to_sharepoint(html_text, meta_obj) -> bool:
                  json.dumps(meta_obj).encode("utf-8"), "application/json")
     print(f"   uploaded to SharePoint: {web}")
     return True
-
-
+ 
+ 
 # --------------------------------------------------------------------------- #
 # MAIN                                                                         #
 # --------------------------------------------------------------------------- #
-
-def advance_marker(con):
+ 
+def mark_emailed(con, rows):
+    """Flag exactly the stories included in this digest as sent. The
+    last_emailed date is kept in meta for information only."""
+    con.executemany("UPDATE articles SET emailed=1 WHERE guid=?",
+                    [(r["guid"],) for r in rows])
     con.execute("INSERT OR REPLACE INTO meta VALUES ('last_emailed', ?)",
                 (date.today().isoformat(),))
     con.commit()
-
-
+ 
+ 
 def main():
     con = sqlite3.connect(DB_PATH)
-    rows, last = select_new(con)
-    print(f"== PRS digest | new since {last}: {len(rows)} stories "
+    rows = select_new(con)
+    print(f"== PRS digest | not yet emailed: {len(rows)} stories "
           f"| dry_run={DRY_RUN} ==")
-
+ 
     if not rows:
-        print("   nothing new today — no email will be sent.")
-        if not DRY_RUN:
-            advance_marker(con)
+        print("   nothing new to send — no email this run.")
         con.close()
         return
-
+ 
     subject, preheader = make_subject_preheader(rows)
     html_text = render_email(rows, subject, preheader)
     meta_obj = {
@@ -484,30 +503,31 @@ def main():
         "date": date.today().isoformat(),
         "areas": len({r["primary_la"] for r in rows if r["primary_la"]}),
     }
-
+ 
     with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
         f.write(html_text)
     with open(OUTPUT_META, "w", encoding="utf-8") as f:
         json.dump(meta_obj, f, indent=2)
     print(f"   subject: {subject}")
     print(f"   wrote {OUTPUT_HTML} ({len(html_text)//1024} KB) and {OUTPUT_META}")
-
+ 
     delivered = False
     if DRY_RUN:
-        print("   dry run — not uploading, marker unchanged.")
+        print("   dry run — not uploading, stories left unmarked.")
     elif graph_configured():
         try:
             delivered = upload_to_sharepoint(html_text, meta_obj)
         except Exception as exc:  # noqa: BLE001
-            print(f"   ! upload failed ({exc}); marker NOT advanced, will retry.")
+            print(f"   ! upload failed ({exc}); stories left unmarked, will retry.")
     else:
-        print("   Graph not configured — wrote file locally, marker NOT advanced.")
-
+        print("   Graph not configured — wrote file locally, stories left unmarked.")
+ 
     if delivered and not DRY_RUN:
-        advance_marker(con)
-        print("   marker advanced to today.")
+        mark_emailed(con, rows)
+        print(f"   marked {len(rows)} stories as emailed.")
     con.close()
-
-
+ 
+ 
 if __name__ == "__main__":
     main()
+ 
