@@ -2,8 +2,13 @@ name: PRS local news monitor
  
 on:
   schedule:
-    # 06:40 UTC daily (early morning UK). Adjust as needed.
-    - cron: "40 6 * * *"
+    # Weekdays only (1-5 = Mon-Fri): 06:40 UTC (morning UK) and 12:40 UTC
+    # (early afternoon UK). No weekend runs — the digest's marker-based
+    # selection means Monday morning's email automatically covers everything
+    # found since Friday afternoon, so weekend news arrives Monday rather
+    # than being lost.
+    - cron: "40 6 * * 1-5"
+    - cron: "40 12 * * 1-5"
   workflow_dispatch:        # allows manual runs from the Actions tab
  
 permissions:
