@@ -457,7 +457,7 @@ def graph_upload(token, site_id, drive_id, name, content_bytes, content_type):
 def upload_to_sharepoint(html_text, meta_obj) -> bool:
     token = graph_token()
     site = graph_get(
-        f"https://graph.microsoft.com/v1.0/sites/{SP_HOST}:{SP_SITE_PATH}", token)
+        f"https://graph.microsoft.com/v1.0/sites/{SP_HOST}:{urllib.parse.quote(SP_SITE_PATH, safe='/')}", token)
     site_id = site["id"]
     drives = graph_get(
         f"https://graph.microsoft.com/v1.0/sites/{site_id}/drives", token)["value"]
