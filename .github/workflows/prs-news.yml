@@ -2,14 +2,26 @@ name: PRS local news monitor
  
 on:
   schedule:
-    # Weekdays only (1-5 = Mon-Fri): 06:40 UTC (morning UK) and 12:40 UTC
-    # (early afternoon UK). No weekend runs — the digest's marker-based
-    # selection means Monday morning's email automatically covers everything
-    # found since Friday afternoon, so weekend news arrives Monday rather
-    # than being lost.
+    # Weekdays only (1-5 = Mon-Fri). The monitor runs twice so the dashboard
+    # stays fresh, but the email digest is sent on the MORNING run only:
+    #   06:40 UTC - monitor + email digest
+    #   12:40 UTC - monitor only (dashboard refresh, no email)
+    # Stories found by the afternoon run are not lost: the digest sends every
+    # story not yet emailed, so they appear in the next morning's email.
+    # Monday morning's email likewise covers everything since Friday.
+    # NOTE: if you change the morning time, update DIGEST_CRON below to match.
     - cron: "40 6 * * 1-5"
     - cron: "40 12 * * 1-5"
   workflow_dispatch:        # allows manual runs from the Actions tab
+    inputs:
+      send_digest:
+        description: "Also send the email digest on this manual run?"
+        type: boolean
+        default: false
+ 
+env:
+  # The schedule that is allowed to send the email. Must match a cron above.
+  DIGEST_CRON: "40 6 * * 1-5"
  
 permissions:
   contents: write           # needed to commit the updated database back
@@ -38,17 +50,21 @@ jobs:
         run: python prs_news_monitor.py
  
       - name: Build and send the daily digest
+        # Morning schedule only, or a manual run with "send digest" ticked.
+        if: >-
+          (github.event_name == 'schedule' && github.event.schedule == env.DIGEST_CRON) ||
+          (github.event_name == 'workflow_dispatch' && inputs.send_digest)
         env:
           PRS_GRAPH_TENANT_ID:     ${{ secrets.AZURE_TENANT_ID }}
           PRS_GRAPH_CLIENT_ID:     ${{ secrets.AZURE_CLIENT_ID }}
           PRS_GRAPH_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           PRS_SP_HOST:             rlateam.sharepoint.com
           # NOTE: SHAREPOINT_SITE_NAME must hold the server-relative SITE PATH,
-          # e.g. /sites/Policy (with leading slash) — not a display name.
+          # e.g. /sites/Policy (with leading slash) - not a display name.
           PRS_SP_SITE_PATH:        ${{ secrets.SHAREPOINT_SITE_NAME }}
           PRS_SP_LIBRARY:          'Campaigns & Policy'
           # NOTE: SHAREPOINT_FOLDER_PATH is the folder INSIDE the library,
-          # no leading slash, e.g. PRS-news-digest — and it must already exist.
+          # no leading slash, e.g. PRS-news-digest - and it must already exist.
           PRS_SP_FOLDER:           ${{ secrets.SHAREPOINT_FOLDER_PATH }}
           PRS_DASHBOARD_URL:       https://jhc220199.github.io/PRS-News-Aggregator/
         run: python build_digest.py
